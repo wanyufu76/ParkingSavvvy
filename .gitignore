@@ -1,0 +1,14 @@
+node_modules
+dist
+.DS_Store
+server/public
+vite.config.ts.*
+*.tar.gz
+build/
+.env
+.env.*        
+uploads/
+# migrations/   #若不想追蹤可保留
+*.log
+.vscode/
+Thumbs.db

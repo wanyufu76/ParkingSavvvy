@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Google OAuth 測試</title>
+</head>
+<body>
+    <h1>Google OAuth 測試頁面</h1>
+    <p>目前的Replit域名: https://4a1fb36a-9fce-4294-a0ff-d1a80e095101-00-3aqw2ne74p4ol.picard.replit.dev</p>
+    <p>Google OAuth回調URL應該設置為:</p>
+    <code>https://4a1fb36a-9fce-4294-a0ff-d1a80e095101-00-3aqw2ne74p4ol.picard.replit.dev/api/auth/google/callback</code>
+    
+    <h2>請在Google Cloud Console中確認以下設置：</h2>
+    <ol>
+        <li>前往 <a href="https://console.cloud.google.com/apis/credentials" target="_blank">Google Cloud Console - 憑證</a></li>
+        <li>選擇你的OAuth 2.0客戶端ID</li>
+        <li>在「已授權的重新導向URI」中添加上述URL</li>
+        <li>儲存設定</li>
+    </ol>
+    
+    <p><a href="/api/auth/google">測試Google登入</a></p>
+</body>
+</html>
