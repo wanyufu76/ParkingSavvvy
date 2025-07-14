@@ -6,14 +6,12 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { 
   Database, 
   Car, 
   MessageSquare, 
-  Users, 
-  Plus, 
   Edit, 
   Trash2, 
   Reply, 
@@ -23,11 +21,13 @@ import {
   MapPin,
   Key,
   Video,
-  Settings
+  Settings,
+  Plus
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { ContactMessage, ParkingSpot } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
+import AddParkingSpotDialog from "@/components/AddParkingSpotDialog"; // ← 你要有這個元件
 
 export default function AdminDashboard() {
   const { toast } = useToast();
@@ -36,6 +36,8 @@ export default function AdminDashboard() {
   const [replyText, setReplyText] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  // 狀態：控制新增停車格 Dialog
+  const [addOpen, setAddOpen] = useState(false);
 
   // 查詢管理員資訊
   const { data: admin, isLoading: adminLoading, error: adminError } = useQuery({
@@ -47,9 +49,7 @@ export default function AdminDashboard() {
     retry: 1,
   });
 
-  // 如果無法驗證管理員權限，重定向到管理員登入頁面
   if (adminError && !adminLoading) {
-    console.log("Admin authentication failed, redirecting to login");
     window.location.href = "/admin/login";
     return null;
   }
@@ -143,9 +143,6 @@ export default function AdminDashboard() {
     },
   });
 
-
-
-  // 登出
   const logoutMutation = useMutation({
     mutationFn: async () => {
       const response = await apiRequest("POST", "/admin/logout");
@@ -340,7 +337,7 @@ export default function AdminDashboard() {
                             </Badge>
                           </TableCell>
                           <TableCell>
-                            {new Date(message.createdAt).toLocaleDateString('zh-TW')}
+                            {message.createdAt? new Date(message.createdAt).toLocaleDateString('zh-TW'): '—'}
                           </TableCell>
                           <TableCell>
                             <Button
@@ -365,11 +362,15 @@ export default function AdminDashboard() {
           {/* 停車格管理頁籤 */}
           <TabsContent value="parking">
             <Card>
-              <CardHeader>
-                <CardTitle>停車格管理</CardTitle>
-                <CardDescription>
-                  管理系統中的所有停車格
-                </CardDescription>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle>停車格管理</CardTitle>
+                  <CardDescription>管理系統中的所有停車格</CardDescription>
+                </div>
+                <Button onClick={() => setAddOpen(true)} className="ml-auto">
+                  <Plus className="w-4 h-4 mr-1" />
+                  新增停車格
+                </Button>
               </CardHeader>
               <CardContent>
                 {spotsLoading ? (
@@ -416,70 +417,8 @@ export default function AdminDashboard() {
                 )}
               </CardContent>
             </Card>
-          </TabsContent>
-
-          {/* 影片管理頁籤 */}
-          <TabsContent value="videos">
-            <Card>
-              <CardHeader>
-                <CardTitle>影片管理</CardTitle>
-                <CardDescription>
-                  查看用戶上傳的影片檔案，為AI模型訓練準備資料
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {videosLoading ? (
-                  <p>載入中...</p>
-                ) : (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>檔案名稱</TableHead>
-                        <TableHead>上傳者</TableHead>
-                        <TableHead>檔案大小</TableHead>
-                        <TableHead>處理狀態</TableHead>
-                        <TableHead>上傳時間</TableHead>
-                        <TableHead>操作</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {videos.map((video: any) => (
-                        <TableRow key={video.id}>
-                          <TableCell className="font-medium">{video.originalName || video.filename}</TableCell>
-                          <TableCell>{video.username || '未知用戶'}</TableCell>
-                          <TableCell>{(video.size / 1024 / 1024).toFixed(2)} MB</TableCell>
-                          <TableCell>
-                            <Badge variant={video.status === 'uploaded' ? 'default' : 'secondary'}>
-                              {video.status === 'uploaded' ? '已上傳' : '處理中'}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            {new Date(video.createdAt).toLocaleDateString('zh-TW')}
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex gap-2">
-                              <Button variant="outline" size="sm" asChild>
-                                <a href={`/api/uploads/${video.filename}`} target="_blank" rel="noopener noreferrer">
-                                  查看
-                                </a>
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => deleteVideoMutation.mutate(video.id)}
-                                disabled={deleteVideoMutation.isPending}
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                )}
-              </CardContent>
-            </Card>
+            {/* 新增停車格 Dialog */}
+            <AddParkingSpotDialog open={addOpen} onOpenChange={setAddOpen} />
           </TabsContent>
 
           {/* 帳號設定頁籤 */}
@@ -529,9 +468,12 @@ export default function AdminDashboard() {
                   <div className="space-y-2 text-sm">
                     <p><span className="font-medium">用戶名：</span>{admin?.username}</p>
                     <p><span className="font-medium">角色：</span>{admin?.role}</p>
-                    <p><span className="font-medium">最後登入：</span>
-                      {admin?.lastLogin ? new Date(admin.lastLogin).toLocaleString('zh-TW') : '從未登入'}
-                    </p>
+                    <p>
+                    <span className="font-medium">最後登入：</span>
+                    {admin?.lastLogin
+                      ? new Date(admin.lastLogin!).toLocaleString('zh-TW')
+                      : '從未登入'}
+                  </p>
                     <p><span className="font-medium">帳號狀態：</span>
                       <Badge variant={admin?.isActive ? 'default' : 'secondary'}>
                         {admin?.isActive ? '啟用' : '停用'}

@@ -1,62 +1,61 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
-import Navigation from "@/components/Navigation";
-import SimpleGoogleMap from "@/components/SimpleGoogleMap";
+
+/* ---------- 新增元件 ---------- */
+import MapWithSpots from "@/components/MapWithSpots";
+import SpotDetailDrawer from "@/components/SpotDetailDrawer";
+
 import ParkingFilters from "@/components/ParkingFilters";
 import ParkingSpotList from "@/components/ParkingSpotList";
+import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from "@/components/ui/tabs";
 import { RefreshCw, Map, List } from "lucide-react";
 import type { ParkingSpot } from "@shared/schema";
+import { apiRequest } from "@/lib/queryClient";
 
 export default function Home() {
+  /* ---------- Toast & 取得停車格 ---------- */
   const { toast } = useToast();
-  const { data: parkingSpots = [], isLoading, refetch } = useQuery({
+  const {
+    data: parkingSpots = [],
+    isLoading,
+    refetch,
+  } = useQuery<ParkingSpot[]>({
     queryKey: ["/api/parking-spots"],
   });
 
-  // 處理OAuth登入結果
+  /* ---------- OAuth 登入結果處理 ---------- */
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const loginStatus = urlParams.get('login');
-    const error = urlParams.get('error');
+    const p = new URLSearchParams(location.search);
+    const loginOK = p.get("login") === "success";
+    const err = p.get("error");
 
-    if (loginStatus === 'success') {
-      toast({
-        title: "登入成功",
-        description: "歡迎使用智能停車系統！",
-        variant: "default",
-      });
-      // 清除URL參數
-      window.history.replaceState({}, '', '/');
-    } else if (error) {
-      let errorMessage = "登入時發生錯誤";
-      switch (error) {
-        case 'login_failed':
-          errorMessage = "登入失敗，請重試";
-          break;
-        case 'token_failed':
-          errorMessage = "驗證失敗，請重新登入";
-          break;
-        case 'missing_code':
-          errorMessage = "授權碼遺失，請重新登入";
-          break;
-        default:
-          errorMessage = `登入錯誤：${error}`;
-      }
+    if (loginOK) {
+      toast({ title: "登入成功", description: "歡迎使用智慧停車！" });
+    } else if (err) {
+      const dict: Record<string, string> = {
+        login_failed: "登入失敗，請重試",
+        token_failed: "驗證失敗，請重新登入",
+        missing_code: "授權碼遺失，請重新登入",
+      };
       toast({
         title: "登入失敗",
-        description: errorMessage,
+        description: dict[err] ?? `登入錯誤：${err}`,
         variant: "destructive",
       });
-      // 清除URL參數
-      window.history.replaceState({}, '', '/');
     }
+    if (loginOK || err) history.replaceState({}, "", "/");
   }, [toast]);
 
-  const [activeTab, setActiveTab] = useState("map");
+  /* ---------- 狀態 ---------- */
+  const [activeTab, setActiveTab] = useState<"map" | "list">("map");
   const [selectedSpot, setSelectedSpot] = useState<ParkingSpot | null>(null);
   const [filters, setFilters] = useState({
     searchTerm: "",
@@ -68,137 +67,107 @@ export default function Home() {
     showAvailableOnly: false,
   });
 
-  const handleClearFilters = () => {
-    setFilters({
+  const handleClearFilters = () =>
+    setFilters((f) => ({
+      ...f,
       searchTerm: "",
       availabilityStatus: "all",
       distanceRange: [0, 5000],
       priceRange: [10, 200],
-      amenities: [] as string[],
+      amenities: [],
       sortBy: "distance",
       showAvailableOnly: false,
-    });
+    }));
+
+  const handleSpotClick = (s: ParkingSpot) => {
+    setSelectedSpot(s);      // 打開 Drawer
+    setActiveTab("map");     // 切回地圖
   };
 
-  const handleSpotClick = (spot: ParkingSpot) => {
-    setSelectedSpot(spot);
-    setActiveTab("map");
-  };
+  const totalSpaces = parkingSpots.reduce((t, s) => t + s.totalSpaces, 0);
+  const availableSpaces = parkingSpots.reduce(
+    (t, s) => t + s.availableSpaces,
+    0,
+  );
 
-  const totalSpaces = (parkingSpots as ParkingSpot[]).reduce((sum: number, spot: ParkingSpot) => sum + spot.totalSpaces, 0);
-  const availableSpaces = (parkingSpots as ParkingSpot[]).reduce((sum: number, spot: ParkingSpot) => sum + spot.availableSpaces, 0);
-  const occupiedSpaces = totalSpaces - availableSpaces;
-  const limitedSpaces = (parkingSpots as ParkingSpot[]).filter((spot: ParkingSpot) => {
-    const ratio = spot.availableSpaces / spot.totalSpaces;
-    return ratio > 0.2 && ratio <= 0.5;
-  }).reduce((sum: number, spot: ParkingSpot) => sum + spot.availableSpaces, 0);
-
-  const handleRefresh = () => {
-    refetch();
-  };
-
+  /* ---------- 版面 ---------- */
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
 
-      {/* Hero Section */}
-      <div className="bg-gradient-to-r from-primary to-secondary text-white py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl font-bold mb-4">智慧停車位檢測系統</h2>
-          <p className="text-xl text-cyan-100 mb-8">透過AI技術，即時掌握台科大周邊停車位狀況</p>
-          <div className="flex justify-center items-center space-x-6">
-            <div className="flex items-center">
-              <div className="w-4 h-4 bg-success rounded-full mr-2"></div>
-              <span>空位</span>
-            </div>
-            <div className="flex items-center">
-              <div className="w-4 h-4 bg-warning rounded-full mr-2"></div>
-              <span>有限</span>
-            </div>
-            <div className="flex items-center">
-              <div className="w-4 h-4 bg-error rounded-full mr-2"></div>
-              <span>已滿</span>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Hero */}
+      <section className="bg-gradient-to-r from-primary to-secondary text-white py-12 text-center">
+        <h2 className="text-4xl font-bold mb-3">智慧停車位檢測系統</h2>
+        <p className="text-lg text-cyan-100 mb-6">
+          透過 AI 即時掌握台科大周邊停車位狀況
+        </p>
+      </section>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Filters */}
-        <ParkingFilters 
+      {/* Main */}
+      <main className="max-w-7xl mx-auto px-4 py-8">
+        <ParkingFilters
           filters={filters}
           onFiltersChange={setFilters}
           onClearFilters={handleClearFilters}
         />
 
-        {/* View Toggle Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)}>
+          {/* 切換 Map / List */}
           <div className="flex justify-between items-center mb-4">
-            <TabsList className="grid w-[300px] grid-cols-2">
-              <TabsTrigger value="map" className="flex items-center gap-2">
-                <Map className="h-4 w-4" />
-                地圖檢視
+            <TabsList className="grid w-[240px] grid-cols-2">
+              <TabsTrigger value="map" className="flex items-center gap-1">
+                <Map className="h-4 w-4" /> 地圖
               </TabsTrigger>
-              <TabsTrigger value="list" className="flex items-center gap-2">
-                <List className="h-4 w-4" />
-                列表檢視
+              <TabsTrigger value="list" className="flex items-center gap-1">
+                <List className="h-4 w-4" /> 列表
               </TabsTrigger>
             </TabsList>
 
-            {/* Summary Stats */}
-            <div className="flex items-center gap-4 text-sm text-gray-600">
-              <div className="flex items-center gap-2">
-                <span>總車位:</span>
-                <span className="font-semibold text-primary">{totalSpaces}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span>可用:</span>
-                <span className="font-semibold text-success">{availableSpaces}</span>
-              </div>
-              <Button 
-                onClick={handleRefresh} 
+            {/* 總覽 + 手動刷新 */}
+            <div className="flex items-center gap-4 text-sm text-gray-700">
+              <span>
+                總車位 <b>{totalSpaces}</b>
+              </span>
+              <span>
+                可用 <b className="text-success">{availableSpaces}</b>
+              </span>
+              <Button
                 variant="outline"
                 size="sm"
+                onClick={() => refetch()}
                 disabled={isLoading}
               >
-                <RefreshCw className={`h-3 w-3 mr-1 ${isLoading ? 'animate-spin' : ''}`} />
+                <RefreshCw
+                  className={`h-3 w-3 mr-1 ${isLoading ? "animate-spin" : ""}`}
+                />
                 更新
               </Button>
             </div>
           </div>
 
-          <TabsContent value="map" className="space-y-0">
-            <div className="relative">
-              {/* Map Stats Card - positioned over map */}
-              {selectedSpot && (
-                <div className="absolute top-4 right-4 z-10">
-                  <Card className="max-w-sm">
-                    <CardContent className="p-4">
-                      <h3 className="font-semibold text-gray-800 mb-2">{selectedSpot.name}</h3>
-                      <p className="text-sm text-gray-600 mb-3">{selectedSpot.address}</p>
-                      <div className="grid grid-cols-2 gap-2 text-sm">
-                        <div>總車位: <span className="font-semibold">{selectedSpot.totalSpaces}</span></div>
-                        <div>可用: <span className="font-semibold text-success">{selectedSpot.availableSpaces}</span></div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              )}
-              
-              <SimpleGoogleMap onParkingSpotClick={handleSpotClick} />
+          {/* 地圖視圖 */}
+          <TabsContent value="map">
+            <div className="h-[70vh] rounded-lg overflow-hidden">
+              <MapWithSpots onSpotClick={handleSpotClick} />
             </div>
           </TabsContent>
 
-          <TabsContent value="list" className="space-y-0">
-            <ParkingSpotList 
-              parkingSpots={parkingSpots as ParkingSpot[]}
+          {/* 列表視圖 */}
+          <TabsContent value="list">
+            <ParkingSpotList
+              parkingSpots={parkingSpots}
               filters={filters}
               onSpotClick={handleSpotClick}
             />
           </TabsContent>
         </Tabs>
-      </div>
+      </main>
+
+      {/* 👉 側邊詳情 Drawer */}
+      <SpotDetailDrawer
+        spot={selectedSpot}
+        onClose={() => setSelectedSpot(null)}
+      />
     </div>
   );
 }
