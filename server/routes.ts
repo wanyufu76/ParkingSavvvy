@@ -459,82 +459,110 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // 共享影片API - 只有有上傳記錄的用戶才能查看所有影片
-  app.get("/api/shared-videos", requireAuth, async (req, res) => {
+  // 刪除使用者的影片上傳紀錄
+  app.delete("/api/uploads/:id", requireAuth, async (req, res) => {
     try {
       const userId = req.user?.id;
-      if (!userId) {
-        return res.status(400).json({ message: "User not found" });
+      const id = parseInt(req.params.id);
+      const upload = await storage.getImageUploadById(id);
+
+      if (!upload || upload.userId !== userId) {
+        return res.status(403).json({ message: "Unauthorized or upload not found" });
       }
-      
-      // 先檢查用戶是否有上傳記錄
-      const userUploads = await storage.getUserUploads(userId);
-      if (userUploads.length === 0) {
-        return res.status(403).json({ message: "需要有上傳記錄才能查看共享影片" });
+
+      // 刪除資料庫紀錄
+      await storage.deleteImageUpload(id);
+
+      // 刪除檔案
+      const filePath = path.join(process.cwd(), "uploads", upload.filename);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
       }
-      
-      // 獲取所有用戶的上傳檔案（包含用戶資訊）
-      const allUploads = await storage.getAllUploadsWithUsers();
-      res.json(allUploads);
+
+      res.status(200).json({ message: "刪除成功" });
     } catch (error) {
-      console.error("Error fetching shared videos:", error);
-      res.status(500).json({ message: "Failed to fetch shared videos" });
+      console.error("Error deleting upload:", error);
+      res.status(500).json({ message: "Failed to delete upload" });
     }
   });
 
-  // 影片檔案服務
-  app.get("/api/uploads/:filename", requireAuth, async (req, res) => {
-    try {
-      const { filename } = req.params;
-      const filePath = path.join(process.cwd(), "uploads", filename);
-      
-      // 檢查檔案是否存在
-      if (!fs.existsSync(filePath)) {
-        return res.status(404).json({ message: "File not found" });
-      }
-      
-      // 設定正確的MIME type
-      const ext = path.extname(filename).toLowerCase();
-      let contentType = "application/octet-stream";
-      
-      if (ext === ".mp4") {
-        contentType = "video/mp4";
-      } else if (ext === ".jpg" || ext === ".jpeg") {
-        contentType = "image/jpeg";
-      } else if (ext === ".png") {
-        contentType = "image/png";
-      }
-      
-      res.set({
-        "Content-Type": contentType,
-        "Content-Disposition": `inline; filename="${filename}"`,
-        "Cache-Control": "public, max-age=31536000"
-      });
-      
-      // 串流檔案
-      const fileStream = fs.createReadStream(filePath);
-      fileStream.pipe(res);
-      
-    } catch (error) {
-      console.error("Error serving file:", error);
-      res.status(500).json({ message: "Failed to serve file" });
-    }
-  });
 
-  // Contact message route
-  app.post("/api/contact", async (req, res) => {
-    try {
-      const validatedData = insertContactMessageSchema.parse(req.body);
-      const message = await storage.createContactMessage(validatedData);
-      res.status(201).json(message);
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        return res.status(400).json({ message: "Invalid data", errors: error.errors });
+    // 共享影片API - 只有有上傳記錄的用戶才能查看所有影片
+    app.get("/api/shared-videos", requireAuth, async (req, res) => {
+      try {
+        const userId = req.user?.id;
+        if (!userId) {
+          return res.status(400).json({ message: "User not found" });
+        }
+        
+        // 先檢查用戶是否有上傳記錄
+        const userUploads = await storage.getUserUploads(userId);
+        if (userUploads.length === 0) {
+          return res.status(403).json({ message: "需要有上傳記錄才能查看共享影片" });
+        }
+        
+        // 獲取所有用戶的上傳檔案（包含用戶資訊）
+        const allUploads = await storage.getAllUploadsWithUsers();
+        res.json(allUploads);
+      } catch (error) {
+        console.error("Error fetching shared videos:", error);
+        res.status(500).json({ message: "Failed to fetch shared videos" });
       }
-      console.error("Error creating contact message:", error);
-      res.status(500).json({ message: "Failed to create contact message" });
-    }
-  });
+    });
+
+    // 影片檔案服務
+    app.get("/api/uploads/:filename", requireAuth, async (req, res) => {
+      try {
+        const { filename } = req.params;
+        const filePath = path.join(process.cwd(), "uploads", filename);
+        
+        // 檢查檔案是否存在
+        if (!fs.existsSync(filePath)) {
+          return res.status(404).json({ message: "File not found" });
+        }
+        
+        // 設定正確的MIME type
+        const ext = path.extname(filename).toLowerCase();
+        let contentType = "application/octet-stream";
+        
+        if (ext === ".mp4") {
+          contentType = "video/mp4";
+        } else if (ext === ".jpg" || ext === ".jpeg") {
+          contentType = "image/jpeg";
+        } else if (ext === ".png") {
+          contentType = "image/png";
+        }
+        
+        res.set({
+          "Content-Type": contentType,
+          "Content-Disposition": `inline; filename="${filename}"`,
+          "Cache-Control": "public, max-age=31536000"
+        });
+        
+        // 串流檔案
+        const fileStream = fs.createReadStream(filePath);
+        fileStream.pipe(res);
+        
+      } catch (error) {
+        console.error("Error serving file:", error);
+        res.status(500).json({ message: "Failed to serve file" });
+      }
+    });
+
+    // Contact message route
+    app.post("/api/contact", async (req, res) => {
+      try {
+        const validatedData = insertContactMessageSchema.parse(req.body);
+        const message = await storage.createContactMessage(validatedData);
+        res.status(201).json(message);
+      } catch (error) {
+        if (error instanceof z.ZodError) {
+          return res.status(400).json({ message: "Invalid data", errors: error.errors });
+        }
+        console.error("Error creating contact message:", error);
+        res.status(500).json({ message: "Failed to create contact message" });
+      }
+    });
 
   // Admin API routes
   app.get("/admin/api/messages", requireAdmin, async (req, res) => {

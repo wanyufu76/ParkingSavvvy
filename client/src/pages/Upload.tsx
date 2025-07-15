@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Upload as UploadIcon, CloudUpload, FolderOpen, RotateCcw, Image, Video, Check, Clock, Download, Info } from "lucide-react";
 import type { ImageUpload } from "@shared/schema";
+import { Trash } from "lucide-react";
 
 export default function Upload() {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -38,10 +39,18 @@ export default function Upload() {
     }
   }, [isAuthenticated, authLoading, toast]);
 
+  const uploadQueryKey = ["/api/uploads"];
   const { data: uploads = [], isLoading } = useQuery<ImageUpload[]>({
-    queryKey: ["/api/uploads"],
-    enabled: isAuthenticated,
-  });
+  queryKey: uploadQueryKey,
+  queryFn: async () => {
+    const res = await fetch("/api/uploads", { credentials: "include" });
+    if (!res.ok) throw new Error("取得上傳紀錄失敗");
+    return res.json();
+  },
+  enabled: isAuthenticated,
+  staleTime: 1000,
+  refetchOnWindowFocus: false,
+});
 
   const uploadMutation = useMutation({
     mutationFn: async (formData: FormData) => {
@@ -149,6 +158,24 @@ export default function Upload() {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
+  const deleteMutation = useMutation({
+  mutationFn: async (uploadId: number) => {
+    const res = await fetch(`/api/uploads/${uploadId}`, {
+      method: "DELETE",
+      credentials: "include",
+    });
+    if (!res.ok) throw new Error("刪除失敗");
+    return true;
+  },
+  onSuccess: () => {
+    toast({ title: "已刪除", description: "上傳紀錄已刪除。" });
+    queryClient.invalidateQueries({ queryKey: uploadQueryKey });
+  },
+  onError: () => {
+    toast({ title: "刪除失敗", description: "請稍後再試", variant: "destructive" });
+  },
+});
+
   if (authLoading) {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -203,6 +230,7 @@ export default function Upload() {
             )}
           </div>
         </div>
+        
 
         {/* Upload Instructions */}
         <Card className="mb-8 bg-blue-50 border-blue-200">
@@ -395,29 +423,37 @@ export default function Upload() {
                     <div key={upload.id} className="p-6 hover:bg-gray-50">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-4">
-                          <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
-                            upload.processed ? 'bg-success' : 'bg-warning'
-                          }`}>
-                            {upload.mimeType.startsWith('image/') ? (
+                          <div
+                            className={`w-12 h-12 rounded-lg flex items-center justify-center ${
+                              upload.processed ? "bg-success" : "bg-warning"
+                            }`}
+                          >
+                            {upload.mimeType.startsWith("image/") ? (
                               <Image className="h-6 w-6 text-white" />
                             ) : (
                               <Video className="h-6 w-6 text-white" />
                             )}
                           </div>
                           <div>
-                            <h4 className="font-medium text-gray-900">{upload.originalName}</h4>
-                            <p className="text-sm text-gray-600">{upload.location || '未指定地點'}</p>
+                            <h4 className="font-medium text-gray-900">
+                              {upload.originalName}
+                            </h4>
+                            <p className="text-sm text-gray-600">
+                              {upload.location || "未指定地點"}
+                            </p>
                             <p className="text-xs text-gray-500">
-                              {new Date(upload.createdAt || '').toLocaleString('zh-TW')}
+                              {new Date(upload.createdAt || "").toLocaleString("zh-TW")}
                             </p>
                           </div>
                         </div>
                         <div className="flex items-center space-x-4">
-                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                            upload.processed 
-                              ? 'bg-success text-white' 
-                              : 'bg-warning text-white'
-                          }`}>
+                          <span
+                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                              upload.processed
+                                ? "bg-success text-white"
+                                : "bg-warning text-white"
+                            }`}
+                          >
                             {upload.processed ? (
                               <>
                                 <Check className="h-3 w-3 mr-1" />
@@ -430,8 +466,14 @@ export default function Upload() {
                               </>
                             )}
                           </span>
-                          <Button variant="ghost" size="sm">
-                            <Download className="h-4 w-4" />
+
+                          {/* 刪除按鈕 */}
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => deleteMutation.mutate(upload.id)}
+                          >
+                            <Trash className="h-4 w-4 text-red-500" />
                           </Button>
                         </div>
                       </div>
@@ -447,7 +489,7 @@ export default function Upload() {
             </CardContent>
           </Card>
         </div>
-      </div>
+        </div>
     </div>
   );
 }
