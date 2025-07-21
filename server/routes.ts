@@ -32,8 +32,14 @@ const upload = multer({
   storage: storageMulter,
   limits: { fileSize: 500 * 1024 * 1024 },
   fileFilter: (_, file, cb) => {
-    const allowedExt = [".mp4", ".avi", ".mov"];
-    const allowedMime = ["video/mp4", "video/avi", "video/quicktime"];
+    const allowedExt = [".jpg", ".jpeg", ".png", ".mp4", ".avi", ".mov"];
+    const allowedMime = [
+      "image/jpeg",
+      "image/png",
+      "video/mp4",
+      "video/avi",
+      "video/quicktime"
+    ];
 
     const ext = path.extname(file.originalname).toLowerCase();
     const mime = file.mimetype;
@@ -41,11 +47,10 @@ const upload = multer({
     if (allowedExt.includes(ext) && allowedMime.includes(mime)) {
       cb(null, true);
     } else {
-      cb(new Error("僅允許上傳 MP4、AVI、MOV 格式影片"));
+      cb(new Error("僅允許上傳圖片或影片（JPG/PNG/GIF/MP4/AVI/MOV）"));
     }
   },
 });
-
 
 /* --------------------------------------------------
  *  共用 middleware

@@ -164,19 +164,20 @@ export class DatabaseStorage implements IStorage {
 
   async getAllUploadsWithUsers(): Promise<any[]> {
     const uploads = await db
-      .select({
-        id: imageUploads.id,
-        filename: imageUploads.filename,
-        originalName: imageUploads.originalName,
-        mimeType: imageUploads.mimeType,
-        size: imageUploads.size,
-        status: imageUploads.status,
-        createdAt: imageUploads.createdAt,
-        username: users.username
-      })
-      .from(imageUploads)
-      .leftJoin(users, eq(imageUploads.userId, users.id))
-      .orderBy(desc(imageUploads.createdAt));
+    .select({
+      id: imageUploads.id,
+      userId: imageUploads.userId,  // 補上這行
+      filename: imageUploads.filename,
+      originalName: imageUploads.originalName,
+      mimeType: imageUploads.mimeType,
+      size: imageUploads.size,
+      status: imageUploads.status,
+      createdAt: imageUploads.createdAt,
+      username: users.username
+    })
+    .from(imageUploads)
+    .leftJoin(users, eq(imageUploads.userId, users.id))
+    .orderBy(desc(imageUploads.createdAt));
 
     return uploads;
   }

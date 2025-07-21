@@ -242,7 +242,7 @@ export default function Upload() {
             <ul className="space-y-2 text-blue-800">
               <li className="flex items-start">
                 <Check className="h-4 w-4 text-blue-600 mr-2 mt-1 flex-shrink-0" />
-                支援格式：AVI、MOV、MP4 (單檔最大500MB)
+                支援格式：JPEG、PNG、AVI、MOV、MP4 (單檔最大500MB)
               </li>
               <li className="flex items-start">
                 <Check className="h-4 w-4 text-blue-600 mr-2 mt-1 flex-shrink-0" />
@@ -275,13 +275,13 @@ export default function Upload() {
                   </div>
                   <div>
                     <h3 className="text-lg font-medium text-gray-900 mb-2">拖拽檔案到此處或點擊選擇</h3>
-                    <p className="text-gray-600">支援 AVI、MOV、MP4 格式</p>
+                    <p className="text-gray-600">支援 JPEG、PNG、AVI、MOV、MP4 格式</p>
                   </div>
                   <input
                     type="file"
                     id="file-input"
                     multiple
-                    accept=".jpg,.jpeg,.png,.mp4"
+                    accept=".jpg,.jpeg,.png,.mp4,.avi,.mov"
                     className="hidden"
                     onChange={handleFileSelect}
                   />
