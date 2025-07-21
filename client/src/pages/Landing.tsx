@@ -1,6 +1,16 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ParkingMeter, Bot, Clock, Smartphone, MapPin, Lock as LockIcon, Mail as MailIcon, Users as UsersIcon, Zap as ZapIcon } from "lucide-react";
+import {
+  ParkingMeter,
+  Bot,
+  Clock,
+  Lock as LockIcon,
+  Mail as MailIcon,
+  Users as UsersIcon,
+  Zap as ZapIcon,
+  MonitorSmartphone,
+  Map as MapIcon,
+} from "lucide-react";
 import { useLocation } from "wouter";
 
 export default function Landing() {
@@ -151,26 +161,30 @@ export default function Landing() {
               </CardContent>
             </Card>
             <Card className="p-6 text-center">
-              <CardContent className="pt-6">
-                <div className="w-16 h-16 bg-success rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Smartphone className="h-8 w-8 text-white" />
-                </div>
-                <h4 className="text-xl font-semibold text-gray-900 mb-2">跨裝置支援</h4>
-                <p className="text-gray-600">手機、平板、電腦都能使用</p>
-              </CardContent>
-            </Card>
-            <Card className="p-6 text-center">
-              <CardContent className="pt-6">
-                <div className="w-16 h-16 bg-warning rounded-full flex items-center justify-center mx-auto mb-4">
-                  <MapPin className="h-8 w-8 text-white" />
-                </div>
-                <h4 className="text-xl font-semibold text-gray-900 mb-2">地圖整合</h4>
-                <p className="text-gray-600">Google Maps無縫整合</p>
-              </CardContent>
-            </Card>
+            <CardContent className="pt-6">
+              {/* 跨裝置支援 */}
+              <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <MonitorSmartphone className="h-8 w-8 text-white" />
+              </div>
+              <h4 className="text-xl font-semibold text-gray-900 mb-2">跨裝置支援</h4>
+              <p className="text-gray-600">手機、平板、電腦都能使用</p>
+            </CardContent>
+          </Card>
+
+          <Card className="p-6 text-center">
+            <CardContent className="pt-6">
+              {/* 地圖整合 */}
+              <div className="w-16 h-16 bg-yellow-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <MapIcon className="h-8 w-8 text-white" />
+              </div>
+              <h4 className="text-xl font-semibold text-gray-900 mb-2">地圖整合</h4>
+              <p className="text-gray-600">Google Maps無縫整合</p>
+            </CardContent>
+          </Card>
           </div>
         </div>
       </div>
+
 
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-12">
