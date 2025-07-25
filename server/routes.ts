@@ -20,11 +20,23 @@ import fs from "fs";
  * -------------------------------------------------- */
 const storageMulter = multer.diskStorage({
   destination: (_, __, cb) => cb(null, "uploads/"),
-  filename: (_, file, cb) => {
-    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-    // 以 UTF‑8 正確保存檔名（解決中文亂碼）
-    const original = Buffer.from(file.originalname, "latin1").toString("utf8");
-    cb(null, `${file.fieldname}-${uniqueSuffix}${path.extname(original)}`);
+  filename: (req, file, cb) => {
+    try {
+      const original = Buffer.from(file.originalname, "latin1").toString("utf8");
+      const ext = path.extname(original);
+      
+      const location = req.body.location || "unknown-location";
+      const datetime = req.body.datetime || new Date().toISOString();
+
+      // 移除非法字元、格式化檔名
+      const sanitizedLocation = location.replace(/[^\w\u4e00-\u9fa5\s-]/g, "_").replace(/\s+/g, "_");
+      const sanitizedDatetime = datetime.replace(/[:T]/g, "-").split(".")[0];
+
+      const filename = `${sanitizedLocation}_${sanitizedDatetime}${ext}`;
+      cb(null, filename);
+    } catch (e) {
+      cb(e as Error, "");
+    }
   },
 });
 
@@ -423,39 +435,55 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Image upload routes
   app.post("/api/uploads", requireAuth, upload.single("file"), async (req, res) => {
-    try {
-      const userId = req.user?.id;
-      if (!userId) {
-        return res.status(400).json({ message: "User not found" });
-      }
-
-      if (!req.file) {
-        return res.status(400).json({ message: "No file uploaded" });
-      }
-
-      // 正確處理中文文件名編碼
-      const originalName = Buffer.from(req.file.originalname, 'latin1').toString('utf8');
-      
-      const uploadData = {
-        userId: userId,
-        filename: req.file.filename,
-        originalName: originalName,
-        mimeType: req.file.mimetype,
-        size: req.file.size,
-        status: "uploaded" as const,
-      };
-
-      const validatedData = insertImageUploadSchema.parse(uploadData);
-      const upload_record = await storage.createImageUpload(validatedData);
-      res.status(201).json(upload_record);
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        return res.status(400).json({ message: "Invalid data", errors: error.errors });
-      }
-      console.error("Error uploading file:", error);
-      res.status(500).json({ message: "Failed to upload file" });
+  try {
+    const userId = req.user?.id;
+    if (!userId) {
+      return res.status(400).json({ message: "User not found" });
     }
-  });
+
+    const { location, datetime } = req.body;
+    if (!location || !datetime) {
+      return res.status(400).json({ message: "缺少拍攝地點或拍攝時間" });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+
+    const originalName = Buffer.from(req.file.originalname, 'latin1').toString('utf8');
+
+    // 建立新檔名：台科大正門_2025-07-25-10-30.mp4
+    const ext = path.extname(originalName);
+    const safeDatetime = datetime.replace(/[:T]/g, "-").split(".")[0];
+    const safeFilename = `${location}_${safeDatetime}${ext}`;
+    const oldPath = path.join("uploads", req.file.filename);
+    const newPath = path.join("uploads", safeFilename);
+
+    // 重新命名檔案
+    fs.renameSync(oldPath, newPath);
+
+    const uploadData = {
+      userId: userId,
+      filename: safeFilename,
+      originalName: originalName,
+      mimeType: req.file.mimetype,
+      size: req.file.size,
+      location,
+      datetime,
+      status: "uploaded" as const,
+    };
+
+    const validatedData = insertImageUploadSchema.parse(uploadData);
+    const upload_record = await storage.createImageUpload(validatedData);
+    res.status(201).json(upload_record);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({ message: "Invalid data", errors: error.errors });
+    }
+    console.error("Error uploading file:", error);
+    res.status(500).json({ message: "Failed to upload file" });
+  }
+});
 
   app.get("/api/uploads", requireAuth, async (req, res) => {
     try {
@@ -548,7 +576,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         res.set({
           "Content-Type": contentType,
-          "Content-Disposition": `inline; filename="${filename}"`,
+          "Content-Disposition": "inline",
           "Cache-Control": "public, max-age=31536000"
         });
         
