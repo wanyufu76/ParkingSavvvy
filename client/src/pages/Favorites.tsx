@@ -70,7 +70,7 @@ export default function Favorites() {
   const watchIdRef = useRef<number | null>(null);
   const alertedRef = useRef<Set<number>>(new Set());
 
-  const ALERT_RADIUS = 5000; // m
+  const ALERT_RADIUS = 1000; // m
   const MIN_MOVE = 20; // m
 
   /* 當前要顯示的 Dialog 車格 */
