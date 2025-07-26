@@ -2,13 +2,43 @@ import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { Menu, X, ParkingMeter, Home, Heart, Upload, Mail, LogOut, Settings } from "lucide-react";
+import {
+  Menu,
+  X,
+  ParkingMeter,
+  Home,
+  Heart,
+  Upload,
+  Mail,
+  LogOut,
+  Settings,
+} from "lucide-react";
 import ProfileDialog from "@/components/ProfileDialog";
+
+/* ---------- 宣告使用者型別 ---------- */
+interface AuthUser {
+  username?: string;
+  firstName?: string;
+  lastName?: string;
+  name?: string;
+  email?: string;
+}
 
 export default function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [location] = useLocation();
   const { isAuthenticated, user } = useAuth();
+
+  /* ---------- 使用者顯示名稱 ---------- */
+  const u = user as AuthUser; // <- cast 一下
+
+  const displayName =
+    [
+      u?.username,
+      [u?.firstName, u?.lastName].filter(Boolean).join(" "),
+      u?.name,
+      u?.email,
+    ].find(Boolean) || "";
 
   const navItems = [
     { path: "/", label: "首頁", icon: Home },
@@ -38,7 +68,7 @@ export default function Navigation() {
             </Link>
           </div>
 
-          {/* Desktop Navigation */}
+          {/* ---------- Desktop Navigation ---------- */}
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-4">
               {isAuthenticated ? (
@@ -61,6 +91,7 @@ export default function Navigation() {
                       </Link>
                     );
                   })}
+
                   <ProfileDialog>
                     <Button
                       variant="ghost"
@@ -71,6 +102,14 @@ export default function Navigation() {
                       個人設定
                     </Button>
                   </ProfileDialog>
+
+                  {/* 使用者名稱 */}
+                  {displayName && (
+                    <span className="text-sm font-medium text-gray-700 px-3 py-2">
+                      {displayName}
+                    </span>
+                  )}
+
                   <Button
                     onClick={handleLogout}
                     variant="outline"
@@ -83,7 +122,7 @@ export default function Navigation() {
                 </>
               ) : (
                 <Button
-                  onClick={() => window.location.href = "/api/login"}
+                  onClick={() => (window.location.href = "/api/login")}
                   className="bg-primary hover:bg-primary/90"
                 >
                   登入
@@ -92,7 +131,7 @@ export default function Navigation() {
             </div>
           </div>
 
-          {/* Mobile menu button */}
+          {/* ---------- Mobile menu button ---------- */}
           <div className="md:hidden">
             <Button
               variant="ghost"
@@ -109,7 +148,7 @@ export default function Navigation() {
         </div>
       </div>
 
-      {/* Mobile menu */}
+      {/* ---------- Mobile menu ---------- */}
       {isMobileMenuOpen && (
         <div className="md:hidden bg-white border-t">
           <div className="px-2 pt-2 pb-3 space-y-1">
@@ -134,6 +173,7 @@ export default function Navigation() {
                     </Link>
                   );
                 })}
+
                 <ProfileDialog>
                   <Button
                     variant="ghost"
@@ -143,7 +183,15 @@ export default function Navigation() {
                     <Settings className="h-4 w-4 mr-2" />
                     個人設定
                   </Button>
+
                 </ProfileDialog>
+                {/* 使用者名稱 (mobile) */}
+                {displayName && (
+                  <span className="block px-3 py-2 text-base font-medium text-gray-700">
+                    {displayName}
+                  </span>
+                )}
+
                 <Button
                   onClick={handleLogout}
                   variant="outline"
@@ -155,7 +203,7 @@ export default function Navigation() {
               </>
             ) : (
               <Button
-                onClick={() => window.location.href = "/api/login"}
+                onClick={() => (window.location.href = "/api/login")}
                 className="w-full bg-primary hover:bg-primary/90"
               >
                 登入
