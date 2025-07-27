@@ -5,7 +5,6 @@ interface Props {
   onSpotClick?: (spot: ParkingSpot) => void;
 }
 
-/** Google Map + 標記 + 模擬俯衝 Pegman 效果 */
 export default function MapWithSpots({ onSpotClick }: Props) {
   const mapRef = useRef<HTMLDivElement>(null);
 
@@ -78,90 +77,98 @@ export default function MapWithSpots({ onSpotClick }: Props) {
       });
     });
 
-  const myPoint = { lat: 25.011824, lng: 121.540574 };
-  const myMarker = new g.maps.Marker({
-    position: myPoint,
-    map,
-    title: "全家外室外停車格",
-    icon: {
-      url: "https://cdn-icons-png.flaticon.com/512/608/608690.png",
-      scaledSize: new g.maps.Size(36, 36),
-    },
-  });
-let isZoomed = false;
-let drawnLines: google.maps.Polyline[] = [];
+    const myPoint = { lat: 25.011824, lng: 121.540574 };
+    const myMarker = new g.maps.Marker({
+      position: myPoint,
+      map,
+      title: "全家外室外停車格",
+      icon: {
+        url: "https://cdn-icons-png.flaticon.com/512/608/608690.png",
+        scaledSize: new g.maps.Size(36, 36),
+      },
+    });
 
-myMarker.addListener("click", () => {
-  if (!isZoomed) {
-    map.setZoom(21);
-    map.setCenter(myPoint);
+    let isZoomed = false;
+    let drawnRects: google.maps.Polygon[] = [];
+    let labels: google.maps.Marker[] = [];
 
-    const lines = [
-      //右
-      [
-        { lat: 25.011743, lng: 121.540651 },
-        { lat: 25.011773, lng: 121.540690 },
-      ],
-      [
-        { lat: 25.011773, lng: 121.540690 },
-        { lat: 25.011713, lng: 121.540736 },
-      ],
-      [
-        { lat: 25.011713, lng: 121.540736 },
-        { lat: 25.011683, lng: 121.540695 },
-      ],
-      //中
-      [
-        { lat: 25.011832, lng: 121.540578 },
-        { lat: 25.011862, lng: 121.540618 },
-      ],
-      [
-        { lat: 25.011862, lng: 121.540618 },
-        { lat: 25.011803, lng: 121.540663 },
-      ],
-      [
-        { lat: 25.011803, lng: 121.540663 },
-        { lat: 25.011773, lng: 121.540622 },
-      ],
-      //左
+    const boxCoords = [
       [
         { lat: 25.011927, lng: 121.540503 },
         { lat: 25.011957, lng: 121.540543 },
-      ],
-      [
-        { lat: 25.011957, lng: 121.540543 },
-        { lat: 25.011899, lng: 121.540588 },
-      ],
-      [
         { lat: 25.011899, lng: 121.540588 },
         { lat: 25.011869, lng: 121.540548 },
       ],
-
+      [
+        { lat: 25.011832, lng: 121.540578 },
+        { lat: 25.011862, lng: 121.540618 },
+        { lat: 25.011803, lng: 121.540663 },
+        { lat: 25.011773, lng: 121.540622 },
+      ],
+      [
+        { lat: 25.011743, lng: 121.540651 },
+        { lat: 25.011773, lng: 121.540690 },
+        { lat: 25.011713, lng: 121.540736 },
+        { lat: 25.011683, lng: 121.540695 },
+      ],
     ];
 
-    lines.forEach((path) => {
-      const line = new g.maps.Polyline({
-        path,
-        geodesic: true,
-        strokeColor: "#ff0000ff",
-        strokeOpacity: 0.8,
-        strokeWeight: 8,
-        map: map,
-      });
-      drawnLines.push(line); // 記錄這條線
+    // 加在框框外側的藍圓數字標籤座標
+    const labelCenters = [
+      { lat: 25.01196, lng: 121.54057 },
+      { lat: 25.011865, lng: 121.540655 },
+      { lat: 25.011775, lng: 121.54074 },
+    ];
+
+    myMarker.addListener("click", () => {
+      if (!isZoomed) {
+        map.setZoom(21);
+        map.setCenter(myPoint);
+
+        boxCoords.forEach((path, i) => {
+          const rect = new g.maps.Polygon({
+            paths: path,
+            strokeColor: "#1E90FF",
+            strokeOpacity: 0.9,
+            strokeWeight: 3,
+            fillColor: "#87CEFA",
+            fillOpacity: 0.6,
+            map,
+          });
+          drawnRects.push(rect);
+
+          const label = new g.maps.Marker({
+            position: labelCenters[i],
+            map,
+            label: {
+              text: `${i + 1}`,
+              color: "white",
+              fontSize: "14px",
+              fontWeight: "bold",
+            },
+            icon: {
+              path: g.maps.SymbolPath.CIRCLE,
+              scale: 14,
+              fillColor: "#1E90FF",
+              fillOpacity: 1,
+              strokeWeight: 0,
+            },
+          });
+          labels.push(label);
+        });
+
+        isZoomed = true;
+      } else {
+        map.setZoom(16);
+        map.setCenter(center);
+
+        drawnRects.forEach((r) => r.setMap(null));
+        labels.forEach((l) => l.setMap(null));
+        drawnRects = [];
+        labels = [];
+        isZoomed = false;
+      }
     });
-
-    isZoomed = true;
-  } else {
-    // 還原地圖與清除紅線
-    map.setZoom(16);
-    map.setCenter({ lat: 25.0136, lng: 121.5408 });
-
-    drawnLines.forEach((line) => line.setMap(null)); // 移除紅線
-    drawnLines = []; // 清空紀錄
-    isZoomed = false;
-  }
-});
   };
 
   return <div ref={mapRef} className="w-full h-full" />;

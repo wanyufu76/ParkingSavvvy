@@ -324,7 +324,7 @@ export default function Upload() {
                   <Input
                     id="location"
                     type="text"
-                    placeholder="例：台科大正門停車場"
+                    placeholder="例：left、mid、right"
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
                   />
