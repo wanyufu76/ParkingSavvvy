@@ -170,10 +170,6 @@ export default function Favorites() {
   const handleRemoveFavorite = (id: number) => removeFavoriteMutation.mutate(id);
 
   /* ========= 4. UI 工具 ========= */
-  const getStatusColor = (s: ParkingSpot) => {
-    const r = s.availableSpaces / s.totalSpaces;
-    return r > 0.5 ? "text-success" : r > 0.2 ? "text-warning" : "text-error";
-  };
 
   const filteredFavorites = useMemo(() => {
     if (!searchTerm.trim()) return favorites;
@@ -253,88 +249,89 @@ export default function Favorites() {
         </Card>
 
         {/* 清單 */}
-        {filteredFavorites.length ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredFavorites.map(({ id, parkingSpot }) => (
-              <Card key={id} className="hover:shadow-md transition-shadow">
-                <CardContent className="p-6">
-                  <div className="flex justify-between mb-4">
-                    <div>
-                      <h3 className="text-lg font-semibold">
-                        {parkingSpot.name}
-                      </h3>
-                      <p className="text-sm text-gray-500">
-                        {parkingSpot.address}
-                      </p>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleRemoveFavorite(parkingSpot.id)}
-                      className="text-error"
-                    >
-                      <Heart className="h-4 w-4 fill-current" />
-                    </Button>
-                  </div>
+      {filteredFavorites.length ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredFavorites.map(({ id, parkingSpot }) => (
+            <Card key={id} className="hover:shadow-md transition-shadow">
+              <CardContent className="p-6">
+              <div className="flex justify-between mb-4">
+                <div>
+                  <h3 className="text-lg font-semibold">{parkingSpot.name}</h3>
+                  <p className="text-sm text-gray-500">{parkingSpot.address}</p>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleRemoveFavorite(parkingSpot.id)}
+                  className="text-error"
+                >
+                  <Heart className="h-4 w-4 fill-current" />
+                </Button>
+              </div>
 
-                  <div className="space-y-3 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">總車位</span>
-                      <span className="font-semibold">
-                        {parkingSpot.totalSpaces}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">可用車位</span>
-                      <span
-                        className={`font-semibold ${getStatusColor(
-                          parkingSpot
-                        )}`}
-                      >
-                        {parkingSpot.availableSpaces}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">最後更新</span>
-                      <span className="text-gray-500">
-                        {new Date(
-                          parkingSpot.lastUpdated || ""
-                        ).toLocaleString("zh-TW")}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="mt-4 pt-4 border-t flex gap-2">
-                    <Button
-                      className="flex-1 bg-primary hover:bg-primary/90"
-                      size="sm"
-                      onClick={() =>
-                        window.open(
-                          `https://www.google.com/maps/dir/?api=1&destination=${parseFloat(
-                            parkingSpot.latitude
-                          )},${parseFloat(parkingSpot.longitude)}`,
-                          "_blank"
+              <div className="space-y-3 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-gray-600">費率</span>
+                  <span className="font-semibold">
+                    {parkingSpot.pricePerHour || "尚未提供"}/小時
+                  </span>
+                </div>
+                {coords && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">距離</span>
+                    <span className="font-semibold">
+                      {Math.round(
+                        haversineMeters(
+                          coords.lat,
+                          coords.lng,
+                          parseFloat(parkingSpot.latitude),
+                          parseFloat(parkingSpot.longitude)
                         )
-                      }
-                    >
-                      <NavigationIcon className="h-4 w-4 mr-1" />
-                      導航
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className="flex-1"
-                      size="sm"
-                      onClick={() => (window.location.href = "/")}
-                    >
-                      <Eye className="h-4 w-4 mr-1" />
-                      查看
-                    </Button>
+                      )}{" "}
+                      公尺
+                    </span>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        ) : (
+                )}
+                <div className="flex justify-between">
+                  <span className="text-gray-600">最後更新</span>
+                  <span className="text-gray-500">
+                    {new Date(parkingSpot.lastUpdated || "").toLocaleString("zh-TW")}
+                  </span>
+                </div>
+              </div>
+
+              <div className="mt-4 pt-4 border-t flex gap-2">
+                <Button
+                  className="flex-1 bg-primary hover:bg-primary/90"
+                  size="sm"
+                  onClick={() =>
+                    window.open(
+                      `https://www.google.com/maps/dir/?api=1&destination=${parseFloat(
+                        parkingSpot.latitude
+                      )},${parseFloat(parkingSpot.longitude)}`,
+                      "_blank"
+                    )
+                  }
+                >
+                  <NavigationIcon className="h-4 w-4 mr-1" />
+                  導航
+                </Button>
+                <Button
+                  variant="outline"
+                  className="flex-1"
+                  size="sm"
+                  onClick={() => (window.location.href = "/")}
+                >
+                  <Eye className="h-4 w-4 mr-1" />
+                  查看
+                </Button>
+              </div>
+            </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : (
+
           <div className="text-center py-16">
             <MapPin className="h-12 w-12 text-gray-400 mx-auto mb-6" />
             <h3 className="text-xl font-semibold mb-2">
