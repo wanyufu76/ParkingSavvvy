@@ -7,7 +7,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Heart, MapPin, Clock, Car, Star, Navigation as NavigationIcon } from "lucide-react";
+import { Heart, MapPin, Car, Navigation as NavigationIcon } from "lucide-react";
 import type { ParkingSpot } from "@shared/schema";
 
 interface FilterOptions {
@@ -30,158 +30,67 @@ export default function ParkingSpotList({ parkingSpots, filters, onSpotClick }: 
   const { toast } = useToast();
   const { isAuthenticated } = useAuth();
 
-  // Add to favorites mutation
   const addFavoriteMutation = useMutation({
     mutationFn: async (parkingSpotId: number) => {
       await apiRequest("POST", "/api/favorites", { parkingSpotId });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/favorites"] });
-      toast({
-        title: "已加入最愛",
-        description: "停車位已成功加入我的最愛",
-      });
+      toast({ title: "已加入最愛", description: "已成功加入我的最愛" });
     },
     onError: (error) => {
       if (isUnauthorizedError(error)) {
-        toast({
-          title: "需要登入",
-          description: "請先登入以使用此功能",
-          variant: "destructive",
-        });
-        setTimeout(() => {
-          window.location.href = "/api/login";
-        }, 1000);
+        toast({ title: "需要登入", description: "請先登入以使用此功能", variant: "destructive" });
+        setTimeout(() => { window.location.href = "/api/login"; }, 1000);
         return;
       }
-      toast({
-        title: "加入失敗",
-        description: "無法加入最愛，請稍後再試",
-        variant: "destructive",
-      });
+      toast({ title: "加入失敗", description: "請稍後再試", variant: "destructive" });
     },
   });
 
-  // Calculate distance (mock function - in real app would use actual coordinates)
   const calculateDistance = (spot: ParkingSpot) => {
-    // Mock distance calculation based on coordinates
-    const lat1 = 25.01331132918195; // Taiwan Tech
-    const lng1 = 121.54056634959909;
-    const lat2 = parseFloat(spot.latitude);
-    const lng2 = parseFloat(spot.longitude);
-    
-    const R = 6371000; // Earth's radius in meters
+    const lat1 = 25.0133, lng1 = 121.5406;
+    const lat2 = parseFloat(spot.latitude), lng2 = parseFloat(spot.longitude);
+    const R = 6371000;
     const dLat = (lat2 - lat1) * Math.PI / 180;
     const dLng = (lng2 - lng1) * Math.PI / 180;
-    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-              Math.sin(dLng/2) * Math.sin(dLng/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLng / 2) ** 2;
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return Math.round(R * c);
   };
 
-  // Mock price generation (in real app would come from database)
-  const getMockPrice = (spot: ParkingSpot) => {
-    const basePrice = 30;
-    const hash = spot.id * 7;
-    return basePrice + (hash % 50);
-  };
-
-  // Mock rating generation
-  const getMockRating = (spot: ParkingSpot) => {
-    const hash = spot.id * 13;
-    return 3.5 + ((hash % 15) / 10);
-  };
-
-  // Filter and sort parking spots
   const filteredAndSortedSpots = useMemo(() => {
-    let filtered = parkingSpots.filter(spot => {
-      // Search term filter
-      if (filters.searchTerm) {
-        const searchLower = filters.searchTerm.toLowerCase();
-        if (!spot.name.toLowerCase().includes(searchLower) && 
-            !spot.address.toLowerCase().includes(searchLower)) {
-          return false;
+    return parkingSpots
+      .filter((spot) => {
+        if (filters.searchTerm) {
+          const lower = filters.searchTerm.toLowerCase();
+          if (!spot.name.toLowerCase().includes(lower) && !spot.address.toLowerCase().includes(lower)) return false;
         }
-      }
-
-      // Availability status filter
-      const ratio = spot.availableSpaces / spot.totalSpaces;
-      if (filters.availabilityStatus === 'available' && ratio <= 0.5) return false;
-      if (filters.availabilityStatus === 'limited' && (ratio <= 0.2 || ratio > 0.5)) return false;
-      if (filters.availabilityStatus === 'full' && ratio > 0.2) return false;
-
-      // Show available only filter
-      if (filters.showAvailableOnly && spot.availableSpaces === 0) return false;
-
-      // Distance filter
-      const distance = calculateDistance(spot);
-      if (distance > filters.distanceRange[1] && filters.distanceRange[1] < 5000) return false;
-
-      // Price filter
-      const price = getMockPrice(spot);
-      if (price < filters.priceRange[0] || (price > filters.priceRange[1] && filters.priceRange[1] < 200)) return false;
-
-      return true;
-    });
-
-    // Sort filtered results
-    switch (filters.sortBy) {
-      case 'distance':
-        filtered.sort((a, b) => calculateDistance(a) - calculateDistance(b));
-        break;
-      case 'availability':
-        filtered.sort((a, b) => b.availableSpaces - a.availableSpaces);
-        break;
-      case 'price':
-        filtered.sort((a, b) => getMockPrice(a) - getMockPrice(b));
-        break;
-      case 'rating':
-        filtered.sort((a, b) => getMockRating(b) - getMockRating(a));
-        break;
-      case 'recent':
-        filtered.sort((a, b) => b.id - a.id);
-        break;
-      default:
-        break;
-    }
-
-    return filtered;
+        const distance = calculateDistance(spot);
+        const price = spot.pricePerHour ?? 30;
+        if (distance > filters.distanceRange[1]) return false;
+        if (price < filters.priceRange[0] || price > filters.priceRange[1]) return false;
+        return true;
+      })
+      .sort((a, b) => {
+        if (filters.sortBy === "distance") return calculateDistance(a) - calculateDistance(b);
+        if (filters.sortBy === "recent") return b.id - a.id;
+        return 0;
+      });
   }, [parkingSpots, filters]);
 
-  const getStatusColor = (spot: ParkingSpot) => {
-    const ratio = spot.availableSpaces / spot.totalSpaces;
-    if (ratio > 0.5) return "success";
-    if (ratio > 0.2) return "secondary";
-    return "destructive";
-  };
-
-  const getStatusText = (spot: ParkingSpot) => {
-    const ratio = spot.availableSpaces / spot.totalSpaces;
-    if (ratio > 0.5) return "充足";
-    if (ratio > 0.2) return "有限";
-    return "已滿";
+  const handleNavigation = (spot: ParkingSpot) => {
+    const lat = parseFloat(spot.latitude), lng = parseFloat(spot.longitude);
+    window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`, "_blank");
   };
 
   const handleAddToFavorites = (spot: ParkingSpot) => {
     if (!isAuthenticated) {
-      toast({
-        title: "需要登入",
-        description: "請先登入以使用此功能",
-        variant: "destructive",
-      });
-      setTimeout(() => {
-        window.location.href = "/api/login";
-      }, 1000);
+      toast({ title: "需要登入", description: "請先登入使用此功能", variant: "destructive" });
+      setTimeout(() => { window.location.href = "/api/login"; }, 1000);
       return;
     }
     addFavoriteMutation.mutate(spot.id);
-  };
-
-  const handleNavigation = (spot: ParkingSpot) => {
-    const lat = parseFloat(spot.latitude);
-    const lng = parseFloat(spot.longitude);
-    window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`, '_blank');
   };
 
   if (filteredAndSortedSpots.length === 0) {
@@ -203,26 +112,18 @@ export default function ParkingSpotList({ parkingSpots, filters, onSpotClick }: 
           找到 {filteredAndSortedSpots.length} 個停車位
         </h3>
         <Badge variant="secondary">
-          {filters.sortBy === 'distance' && '按距離排序'}
-          {filters.sortBy === 'availability' && '按空位數排序'}
-          {filters.sortBy === 'price' && '按價格排序'}
-          {filters.sortBy === 'rating' && '按評分排序'}
-          {filters.sortBy === 'recent' && '按更新時間排序'}
+          {filters.sortBy === "distance" && "按距離排序"}
+          {filters.sortBy === "recent" && "按新增時間排序"}
         </Badge>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {filteredAndSortedSpots.map((spot) => {
           const distance = calculateDistance(spot);
-          const price = getMockPrice(spot);
-          const rating = getMockRating(spot);
+          const price = spot.pricePerHour ?? 30;
 
           return (
-            <Card 
-              key={spot.id} 
-              className="hover:shadow-md transition-shadow duration-200 cursor-pointer"
-              onClick={() => onSpotClick?.(spot)}
-            >
+            <Card key={spot.id} className="hover:shadow-md transition-shadow duration-200 cursor-pointer">
               <CardContent className="p-6">
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex-1">
@@ -231,20 +132,10 @@ export default function ParkingSpotList({ parkingSpots, filters, onSpotClick }: 
                       <MapPin className="h-3 w-3 mr-1" />
                       {spot.address}
                     </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <Badge variant={getStatusColor(spot) as any}>
-                        {getStatusText(spot)}
-                      </Badge>
-                      <span className="text-gray-500">•</span>
-                      <span className="text-gray-600">{distance}m</span>
-                      <span className="text-gray-500">•</span>
-                      <div className="flex items-center">
-                        <Star className="h-3 w-3 text-yellow-400 mr-1" />
-                        <span className="text-gray-600">{rating.toFixed(1)}</span>
-                      </div>
+                    <div className="text-sm text-gray-600">
+                      距離：約 {distance} 公尺
                     </div>
                   </div>
-                  
                   <Button
                     variant="ghost"
                     size="sm"
@@ -258,19 +149,9 @@ export default function ParkingSpotList({ parkingSpots, filters, onSpotClick }: 
                   </Button>
                 </div>
 
-                <div className="grid grid-cols-3 gap-4 mb-4 text-sm">
-                  <div className="text-center">
-                    <div className="text-gray-500">總車位</div>
-                    <div className="font-semibold text-gray-900">{spot.totalSpaces}</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-gray-500">可用</div>
-                    <div className="font-semibold text-green-600">{spot.availableSpaces}</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-gray-500">費率</div>
-                    <div className="font-semibold text-gray-900">NT${price}/時</div>
-                  </div>
+                <div className="text-sm mb-4">
+                  <div className="text-gray-500">費率</div>
+                  <div className="font-semibold text-gray-900">NT${price} / 小時</div>
                 </div>
 
                 <div className="flex gap-2">
