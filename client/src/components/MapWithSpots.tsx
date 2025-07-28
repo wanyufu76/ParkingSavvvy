@@ -35,140 +35,113 @@ export default function MapWithSpots({ onSpotClick }: Props) {
       mapTypeControl: false,
     });
 
-    const streetViewPanorama = new g.maps.StreetViewPanorama(mapRef.current, {
-      position: center,
-      pov: { heading: 0, pitch: 0 },
-      visible: false,
-    });
-
-    map.setStreetView(streetViewPanorama);
-
     const res = await fetch("/api/parking-spots");
     const spots: ParkingSpot[] = await res.json();
-
-    const svService = new g.maps.StreetViewService();
-
-    spots.forEach((spot) => {
-      const lat = parseFloat(spot.latitude);
-      const lng = parseFloat(spot.longitude);
-
-      const marker = new g.maps.Marker({
-        map,
-        position: { lat, lng },
-        title: spot.name,
-      });
-
-      marker.addListener("click", () => {
-        onSpotClick?.(spot);
-
-        svService.getPanorama({ location: { lat, lng }, radius: 50 }, (data: any, status: any) => {
-          if (status === g.maps.StreetViewStatus.OK) {
-            streetViewPanorama.setPosition(data.location.latLng);
-            streetViewPanorama.setPov({
-              heading: 180,
-              pitch: -10,
-              zoom: 1,
-            });
-            streetViewPanorama.setVisible(true);
-          } else {
-            alert("這個地點沒有街景資料。");
-          }
-        });
-      });
-    });
-
-    const myPoint = { lat: 25.011824, lng: 121.540574 };
-    const myMarker = new g.maps.Marker({
-      position: myPoint,
-      map,
-      title: "全家外室外停車格",
-      icon: {
-        url: "https://cdn-icons-png.flaticon.com/512/608/608690.png",
-        scaledSize: new g.maps.Size(36, 36),
-      },
-    });
 
     let isZoomed = false;
     let drawnRects: google.maps.Polygon[] = [];
     let labels: google.maps.Marker[] = [];
 
-    const boxCoords = [
-      [
-        { lat: 25.011927, lng: 121.540503 },
-        { lat: 25.011957, lng: 121.540543 },
-        { lat: 25.011899, lng: 121.540588 },
-        { lat: 25.011869, lng: 121.540548 },
-      ],
-      [
-        { lat: 25.011832, lng: 121.540578 },
-        { lat: 25.011862, lng: 121.540618 },
-        { lat: 25.011803, lng: 121.540663 },
-        { lat: 25.011773, lng: 121.540622 },
-      ],
-      [
-        { lat: 25.011743, lng: 121.540651 },
-        { lat: 25.011773, lng: 121.540690 },
-        { lat: 25.011713, lng: 121.540736 },
-        { lat: 25.011683, lng: 121.540695 },
-      ],
+    // ✅ 假設這些是框框資料，手動對應到 spot.id 或其他欄位
+    const boxMappings = [
+      {
+        spotName: "全家外停車格",
+        point: { lat: 25.011824, lng: 121.540574 },
+        iconUrl: "https://cdn-icons-png.flaticon.com/512/608/608690.png",
+        rects: [
+          [
+            { lat: 25.011927, lng: 121.540503 },
+            { lat: 25.011957, lng: 121.540543 },
+            { lat: 25.011899, lng: 121.540588 },
+            { lat: 25.011869, lng: 121.540548 },
+          ],
+          [
+            { lat: 25.011832, lng: 121.540578 },
+            { lat: 25.011862, lng: 121.540618 },
+            { lat: 25.011803, lng: 121.540663 },
+            { lat: 25.011773, lng: 121.540622 },
+          ],
+          [
+            { lat: 25.011743, lng: 121.540651 },
+            { lat: 25.011773, lng: 121.540690 },
+            { lat: 25.011713, lng: 121.540736 },
+            { lat: 25.011683, lng: 121.540695 },
+          ],
+        ],
+        labelCenters: [
+          { lat: 25.01196, lng: 121.54057 },
+          { lat: 25.011865, lng: 121.540655 },
+          { lat: 25.011775, lng: 121.54074 },
+        ],
+      },
     ];
 
-    // 加在框框外側的藍圓數字標籤座標
-    const labelCenters = [
-      { lat: 25.01196, lng: 121.54057 },
-      { lat: 25.011865, lng: 121.540655 },
-      { lat: 25.011775, lng: 121.54074 },
-    ];
+    for (const mapping of boxMappings) {
+      const matchedSpot = spots.find((s) => s.name === mapping.spotName);
 
-    myMarker.addListener("click", () => {
-      if (!isZoomed) {
-        map.setZoom(21);
-        map.setCenter(myPoint);
+      const marker = new g.maps.Marker({
+        position: mapping.point,
+        map,
+        title: mapping.spotName,
+        icon: {
+          url: mapping.iconUrl,
+          scaledSize: new g.maps.Size(36, 36),
+        },
+      });
 
-        boxCoords.forEach((path, i) => {
-          const rect = new g.maps.Polygon({
-            paths: path,
-            strokeColor: "#1E90FF",
-            strokeOpacity: 0.9,
-            strokeWeight: 3,
-            fillColor: "#87CEFA",
-            fillOpacity: 0.6,
-            map,
+      marker.addListener("click", () => {
+        if (!isZoomed) {
+          map.setZoom(21);
+          map.setCenter(mapping.point);
+
+          mapping.rects.forEach((path, i) => {
+            const rect = new g.maps.Polygon({
+              paths: path,
+              strokeColor: "#1E90FF",
+              strokeOpacity: 0.9,
+              strokeWeight: 3,
+              fillColor: "#87CEFA",
+              fillOpacity: 0.6,
+              map,
+            });
+            drawnRects.push(rect);
+
+            const label = new g.maps.Marker({
+              position: mapping.labelCenters[i],
+              map,
+              label: {
+                text: `${i + 1}`,
+                color: "white",
+                fontSize: "14px",
+                fontWeight: "bold",
+              },
+              icon: {
+                path: g.maps.SymbolPath.CIRCLE,
+                scale: 14,
+                fillColor: "#1E90FF",
+                fillOpacity: 1,
+                strokeWeight: 0,
+              },
+            });
+            labels.push(label);
           });
-          drawnRects.push(rect);
 
-          const label = new g.maps.Marker({
-            position: labelCenters[i],
-            map,
-            label: {
-              text: `${i + 1}`,
-              color: "white",
-              fontSize: "14px",
-              fontWeight: "bold",
-            },
-            icon: {
-              path: g.maps.SymbolPath.CIRCLE,
-              scale: 14,
-              fillColor: "#1E90FF",
-              fillOpacity: 1,
-              strokeWeight: 0,
-            },
-          });
-          labels.push(label);
-        });
+          isZoomed = true;
 
-        isZoomed = true;
-      } else {
-        map.setZoom(16);
-        map.setCenter(center);
-
-        drawnRects.forEach((r) => r.setMap(null));
-        labels.forEach((l) => l.setMap(null));
-        drawnRects = [];
-        labels = [];
-        isZoomed = false;
-      }
-    });
+          if (matchedSpot) {
+            onSpotClick?.(matchedSpot);
+          }
+        } else {
+          map.setZoom(16);
+          map.setCenter(center);
+          drawnRects.forEach((r) => r.setMap(null));
+          labels.forEach((l) => l.setMap(null));
+          drawnRects = [];
+          labels = [];
+          isZoomed = false;
+        }
+      });
+    }
   };
 
   return <div ref={mapRef} className="w-full h-full" />;
