@@ -124,7 +124,6 @@ export default function AdminDashboard() {
   /* -------------------- Derived Data -------------------- */
   const unreadMessages = messages.filter((m: ContactMessage) => !m.isReplied).length;
   const totalParkingSpots = parkingSpots.length;
-  const availableSpots = parkingSpots.reduce((s: number, p: ParkingSpot) => s + p.availableSpaces, 0);
 
   /* ========================================================================
      ================================= JSX ==================================
@@ -162,53 +161,6 @@ export default function AdminDashboard() {
                 <div className="ml-4">
                   <p className="text-sm font-medium text-gray-600 dark:text-gray-400">未讀訊息</p>
                   <p className="text-2xl font-bold text-gray-900 dark:text-white">{unreadMessages}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          {/* Card: 停車格總數 */}
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center">
-                <Car className="w-8 h-8 text-green-600" />
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">停車格總數</p>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{totalParkingSpots}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          {/* Card: 可用車位 */}
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center">
-                <MapPin className="w-8 h-8 text-orange-600" />
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">可用車位</p>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{availableSpots}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          {/* Card: 使用率 */}
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center">
-                <BarChart3 className="w-8 h-8 text-purple-600" />
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">使用率</p>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {totalParkingSpots > 0
-                      ? Math.round(
-                          (availableSpots /
-                            (parkingSpots.reduce(
-                              (sum: number, s: ParkingSpot) => sum + s.totalSpaces,
-                              0
-                            ) || 1)) * 100
-                        )
-                      : 0}
-                    %
-                  </p>
                 </div>
               </div>
             </CardContent>
@@ -314,8 +266,6 @@ export default function AdminDashboard() {
                       <TableRow>
                         <TableHead>名稱</TableHead>
                         <TableHead>地址</TableHead>
-                        <TableHead>總車位</TableHead>
-                        <TableHead>可用車位</TableHead>
                         <TableHead>每小時費用</TableHead>
                         <TableHead>操作</TableHead>
                       </TableRow>
@@ -325,8 +275,6 @@ export default function AdminDashboard() {
                         <TableRow key={spot.id}>
                           <TableCell className="font-medium">{spot.name}</TableCell>
                           <TableCell>{spot.address}</TableCell>
-                          <TableCell>{spot.totalSpaces}</TableCell>
-                          <TableCell>{spot.availableSpaces}</TableCell>
                           <TableCell>NT$ {spot.pricePerHour}</TableCell>
                           <TableCell>
                             <div className="flex gap-2">
