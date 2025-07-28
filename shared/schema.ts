@@ -51,6 +51,27 @@ export const parkingSpots = pgTable("parking_spots", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// 子車格表格
+export const parkingSubSpots = pgTable("parking_sub_spots", {
+  id: serial("id").primaryKey(),
+  parkingSpotId: integer("parking_spot_id").notNull().references(() => parkingSpots.id),
+  label: varchar("label", { length: 10 }).notNull(), // 例如 A01, A02
+  latitude: decimal("latitude", { precision: 10, scale: 8 }).notNull(),
+  longitude: decimal("longitude", { precision: 11, scale: 8 }).notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// 型別
+export type ParkingSubSpot = typeof parkingSubSpots.$inferSelect;
+export type InsertParkingSubSpot = typeof parkingSubSpots.$inferInsert;
+
+// 驗證用 schema
+export const insertParkingSubSpotSchema = createInsertSchema(parkingSubSpots).omit({
+  id: true,
+  createdAt: true,
+});
+
+
 // User favorites table
 export const userFavorites = pgTable("user_favorites", {
   id: serial("id").primaryKey(),

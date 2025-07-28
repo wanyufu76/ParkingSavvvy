@@ -253,13 +253,13 @@ export default function ParkingAdmin() {
                   <h3 className="font-semibold">{spot.name}</h3>
                   <p className="text-sm text-gray-600">{spot.address}</p>
                   <div className="flex gap-2">
-                    <Badge variant="outline">NT${spot.pricePerHour || 30}/小時</Badge>
+                    <Badge variant="outline">NT${spot.pricePerHour}/小時</Badge>
                   </div>
                   <p className="text-sm text-gray-500">
                     位置：{parseFloat(String(spot.latitude)).toFixed(6)}, {parseFloat(String(spot.longitude)).toFixed(6)}
                   </p>
                 </div>
-
+                
                 <Button
                   variant="destructive"
                   size="sm"
