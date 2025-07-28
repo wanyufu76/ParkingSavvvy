@@ -49,8 +49,6 @@ interface FormState {
   address: string;
   latitude: number;
   longitude: number;
-  totalSpaces: number;
-  availableSpaces: number;
   pricePerHour: number;
   description: string;
 }
@@ -75,9 +73,7 @@ export default function AddParkingSpotDialog({ open, onOpenChange }: Props) {
     address: "",
     latitude: 0,
     longitude: 0,
-    totalSpaces: 10,
-    availableSpaces: 5,
-    pricePerHour: 30,
+    pricePerHour: 20,
     description: "",
   });
 
@@ -173,9 +169,7 @@ export default function AddParkingSpotDialog({ open, onOpenChange }: Props) {
       address: "",
       latitude: 0,
       longitude: 0,
-      totalSpaces: 10,
-      availableSpaces: 5,
-      pricePerHour: 30,
+      pricePerHour: 20,
       description: "",
     });
     /* 不移除 map，保留快取；但可以清掉 marker 標記 */
@@ -223,8 +217,6 @@ export default function AddParkingSpotDialog({ open, onOpenChange }: Props) {
           {/* 數值欄位 */}
           {(
             [
-              ["totalSpaces", "總車位"],
-              ["availableSpaces", "可用車位"],
               ["pricePerHour", "費率 (NT$/h)"],
             ] as const
           ).map(([key, label]) => (

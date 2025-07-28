@@ -45,8 +45,6 @@ export const parkingSpots = pgTable("parking_spots", {
   address: text("address").notNull(),
   latitude: decimal("latitude", { precision: 10, scale: 8 }).notNull(),
   longitude: decimal("longitude", { precision: 11, scale: 8 }).notNull(),
-  totalSpaces: integer("total_spaces").notNull(),
-  availableSpaces: integer("available_spaces").notNull(),
   pricePerHour: integer("price_per_hour").default(30),
   description: text("description"),
   lastUpdated: timestamp("last_updated").defaultNow(),

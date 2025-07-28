@@ -78,12 +78,6 @@ export default function Home() {
     setActiveTab("map");
   };
 
-  const totalSpaces = parkingSpots.reduce((t, s) => t + s.totalSpaces, 0);
-  const availableSpaces = parkingSpots.reduce(
-    (t, s) => t + s.availableSpaces,
-    0
-  );
-
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
@@ -114,12 +108,6 @@ export default function Home() {
             </TabsList>
 
             <div className="flex items-center gap-4 text-sm text-gray-700">
-              <span>
-                總車位 <b>{totalSpaces}</b>
-              </span>
-              <span>
-                可用 <b className="text-success">{availableSpaces}</b>
-              </span>
               <Button
                 variant="outline"
                 size="sm"

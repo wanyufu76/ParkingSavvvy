@@ -23,9 +23,6 @@ export default function SpotDetailDrawer({ spot, onClose }: Props) {
       </div>
 
       <p className="text-sm text-muted-foreground">{spot.address}</p>
-      <p>
-        可用 <span className="font-bold">{spot.availableSpaces}</span> / {spot.totalSpaces}
-      </p>
       <p>NT$ {spot.pricePerHour || 30} / 小時</p>
 
       <div className="grid gap-2">

@@ -253,9 +253,6 @@ export default function ParkingAdmin() {
                   <h3 className="font-semibold">{spot.name}</h3>
                   <p className="text-sm text-gray-600">{spot.address}</p>
                   <div className="flex gap-2">
-                    <Badge variant="secondary">
-                      {spot.availableSpaces}/{spot.totalSpaces} 可用
-                    </Badge>
                     <Badge variant="outline">NT${spot.pricePerHour || 30}/小時</Badge>
                   </div>
                   <p className="text-sm text-gray-500">
