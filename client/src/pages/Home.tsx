@@ -51,7 +51,7 @@ export default function Home() {
   }, [toast]);
 
   const [activeTab, setActiveTab] = useState<"map" | "list">("map");
-  const [selectedSpot, setSelectedSpot] = useState<ParkingSpot | null>(null);
+  const [selectedSpot, setSelectedSpot] = useState<(ParkingSpot & { subSpots?: any[] }) | null>(null);
   const [filters, setFilters] = useState({
     searchTerm: "",
     availabilityStatus: "all",

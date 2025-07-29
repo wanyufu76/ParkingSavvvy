@@ -1,0 +1,92 @@
+[
+  {
+    "motor_index": 0,
+    "plate_text": "716-HUB",
+    "pixel_x": 1252,
+    "pixel_y": 1584,
+    "location": "right",
+    "group_id": 3,
+    "image_filename": "right_2025-07-29-12-45.jpg"
+  },
+  {
+    "motor_index": 1,
+    "plate_text": "MRB-8600",
+    "pixel_x": 1595,
+    "pixel_y": 1909,
+    "location": "right",
+    "group_id": 3,
+    "image_filename": "right_2025-07-29-12-45.jpg"
+  },
+  {
+    "motor_index": 2,
+    "plate_text": "NTH-5205",
+    "pixel_x": 1471,
+    "pixel_y": 1738,
+    "location": "right",
+    "group_id": 3,
+    "image_filename": "right_2025-07-29-12-45.jpg"
+  },
+  {
+    "motor_index": 3,
+    "plate_text": "PEJ-8807",
+    "pixel_x": 675,
+    "pixel_y": 1582,
+    "location": "right",
+    "group_id": 3,
+    "image_filename": "right_2025-07-29-12-45.jpg"
+  },
+  {
+    "motor_index": 4,
+    "plate_text": "MSG-1685",
+    "pixel_x": 779,
+    "pixel_y": 1746,
+    "location": "right",
+    "group_id": 3,
+    "image_filename": "right_2025-07-29-12-45.jpg"
+  },
+  {
+    "motor_index": 5,
+    "plate_text": "NZY-8606",
+    "pixel_x": 963,
+    "pixel_y": 1617,
+    "location": "right",
+    "group_id": 3,
+    "image_filename": "right_2025-07-29-12-45.jpg"
+  },
+  {
+    "motor_index": 6,
+    "plate_text": "BP780",
+    "pixel_x": 1354,
+    "pixel_y": 1498,
+    "location": "right",
+    "group_id": 3,
+    "image_filename": "right_2025-07-29-12-45.jpg"
+  },
+  {
+    "motor_index": 7,
+    "plate_text": "ICC-0507",
+    "pixel_x": 1160,
+    "pixel_y": 1502,
+    "location": "right",
+    "group_id": 3,
+    "image_filename": "right_2025-07-29-12-45.jpg"
+  },
+  {
+    "motor_index": 8,
+    "plate_text": "MX-0127",
+    "pixel_x": 888,
+    "pixel_y": 1322,
+    "location": "right",
+    "group_id": 3,
+    "image_filename": "right_2025-07-29-12-45.jpg"
+  },
+  {
+    "motor_index": 9,
+    "plate_text": "8HA-289",
+    "pixel_x": 1063,
+    "pixel_y": 1312,
+    "location": "right",
+    "group_id": 3,
+    "image_filename": "right_2025-07-29-12-45.jpg"
+  }
+]

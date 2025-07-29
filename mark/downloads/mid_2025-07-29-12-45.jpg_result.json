@@ -1,0 +1,74 @@
+[
+  {
+    "motor_index": 0,
+    "real_x": 638.1038198545575,
+    "real_y": 1392.0314860343933,
+    "plate_text": "NFE-9952",
+    "match_distance": 245.37057902672063,
+    "location": "mid"
+  },
+  {
+    "motor_index": 1,
+    "real_x": 1310.673207104206,
+    "real_y": 1503.0773866176605,
+    "plate_text": "TR-78",
+    "match_distance": 32.25962164718189,
+    "location": "mid"
+  },
+  {
+    "motor_index": 2,
+    "real_x": 1509.6059156656265,
+    "real_y": 1617.9201047420502,
+    "plate_text": "TR-78",
+    "match_distance": 263.0559296544107,
+    "location": "mid"
+  },
+  {
+    "motor_index": 3,
+    "real_x": 857.3384582623839,
+    "real_y": 1611.7079350948334,
+    "plate_text": "NFE-9952",
+    "match_distance": 52.654654270146324,
+    "location": "mid"
+  },
+  {
+    "motor_index": 4,
+    "real_x": 1187.1641167104244,
+    "real_y": 1473.2262947559357,
+    "plate_text": "169-JYH",
+    "match_distance": 43.28373458374304,
+    "location": "mid"
+  },
+  {
+    "motor_index": 5,
+    "real_x": 742.5657126323786,
+    "real_y": 1741.0891933441162,
+    "plate_text": "NFE-9952",
+    "match_distance": 94.99144275141826,
+    "location": "mid"
+  },
+  {
+    "motor_index": 6,
+    "real_x": 1064.2707725316286,
+    "real_y": 1589.0538303852081,
+    "plate_text": "52-KR",
+    "match_distance": 53.15930222148268,
+    "location": "mid"
+  },
+  {
+    "motor_index": 7,
+    "real_x": 969.8564556092024,
+    "real_y": 1478.401803970337,
+    "plate_text": "NCQ-0910",
+    "match_distance": 44.67813060107442,
+    "location": "mid"
+  },
+  {
+    "motor_index": 8,
+    "real_x": 1412.7638723254204,
+    "real_y": 1605.560420513153,
+    "plate_text": "TR-78",
+    "match_distance": 142.20999023302252,
+    "location": "mid"
+  }
+]

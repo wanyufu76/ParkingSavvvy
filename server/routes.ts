@@ -14,6 +14,7 @@ import { z } from "zod";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import { registerRedPointsRoutes } from "./redPoints"; 
 
 /* --------------------------------------------------
  *  Multer – local uploads (images / videos up to 500 MB)
@@ -81,6 +82,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   setupAuth(app);
   setupAdminAuth(app);
   await createDefaultAdmin();
+  /* --- 紅點路由：放在萬用 * 之前 --- */
+  registerRedPointsRoutes(app);
 
   /* ---------- Google OAuth ---------- */
   app.get("/api/auth/google", (req, res) => {

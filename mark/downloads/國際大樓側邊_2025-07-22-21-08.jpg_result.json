@@ -1,0 +1,34 @@
+[
+  {
+    "motor_index": 0,
+    "real_x": 1293.5279642641544,
+    "real_y": -1956.4363946914673,
+    "plate_text": "951-JCM",
+    "match_distance": 886.3827114428241,
+    "location": "left"
+  },
+  {
+    "motor_index": 1,
+    "real_x": 1453.4214780330658,
+    "real_y": -2196.6674089431763,
+    "plate_text": "EWA-9966",
+    "match_distance": 268.7346735945612,
+    "location": "left"
+  },
+  {
+    "motor_index": 2,
+    "real_x": 1584.5081402659416,
+    "real_y": -2183.6352195739746,
+    "plate_text": "69:HI",
+    "match_distance": 327.5919326831708,
+    "location": "left"
+  },
+  {
+    "motor_index": 3,
+    "real_x": 1610.9033759832382,
+    "real_y": -1619.5734648704529,
+    "plate_text": "NCX-6283",
+    "match_distance": 622.2852356575023,
+    "location": "left"
+  }
+]

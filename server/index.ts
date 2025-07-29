@@ -1,68 +1,57 @@
-import express, { type Request, Response, NextFunction } from "express";
-import path from "path";                         // ★ 新增
+/*******************************************************************
+ * 1. import 區
+ *******************************************************************/
+import express, { Request, Response, NextFunction } from "express";
+import http from "http";
+import path from "path";
+import { Server as IOServer } from "socket.io";
 import { registerRoutes } from "./routes";
+import { initAutoRunner } from "./autoRunner";
 import { setupVite, serveStatic, log } from "./vite";
 import "dotenv/config";
 
+/*******************************************************************
+ * 2. 先建 app → 再建 httpServer → 再建 socket.io
+ *******************************************************************/
 const app = express();
+const httpServer = http.createServer(app);
+const io = new IOServer(httpServer, { cors: { origin: "*" } });
+
+/* autoRunner 只需呼叫一次，放這裡即可 */
+initAutoRunner(io);
+
+/*******************************************************************
+ * 3. 中介層 & 靜態檔
+ *******************************************************************/
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use("/uploads", express.static(path.join(path.resolve(), "uploads")));
+app.use(express.static("dist"));
 
-app.use(
-  "/uploads",
-  express.static(
-    // 假設影片實體存放在專案根目錄的 uploads 資料夾
-    path.join(path.resolve(), "uploads")
-  )
-);
-
-app.use((req, res, next) => {
-  const start = Date.now();
-  const path = req.path;
-  let capturedJsonResponse: Record<string, any> | undefined = undefined;
-
-  const originalResJson = res.json;
-  res.json = function (bodyJson, ...args) {
-    capturedJsonResponse = bodyJson;
-    return originalResJson.apply(res, [bodyJson, ...args]);
-  };
-
-  res.on("finish", () => {
-    const duration = Date.now() - start;
-    if (path.startsWith("/api")) {
-      let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
-      if (capturedJsonResponse) {
-        logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
-      }
-      if (logLine.length > 80) logLine = logLine.slice(0, 79) + "…";
-      log(logLine);
-    }
-  });
-
-  next();
-});
-
+/*******************************************************************
+ * 4. 其餘 API 路由 (含紅點路由) 交給 registerRoutes
+ *******************************************************************/
 (async () => {
-  // 其他 API 與業務路由
-  const server = await registerRoutes(app);
+  /* registerRoutes 內部已把 /api/*, * fallback 全掛到 app */
+  await registerRoutes(app);
 
+  /********************* 5. Error middleware **********************/
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
-    res.status(status).json({ message });
+    res.status(status).json({ message: err.message || "Internal Server Error" });
     throw err;
   });
 
-  // 僅在 dev 啟動 Vite；prod 走預建靜態
+  /********************* 6. Dev / Prod - Vite ********************/
   if (app.get("env") === "development") {
-    await setupVite(app, server);
+    await setupVite(app, httpServer);     // dev 熱更新
   } else {
-    serveStatic(app); // 這裡通常會把前端 dist 靜態檔掛進來
+    serveStatic(app);                     // prod 靜態目錄
   }
 
- 
-  const port = 5000;
-  server.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}`);
-  });
+  /********************* 7. 啟動 HTTP + WS 伺服器 *****************/
+  const PORT = 5000;
+  httpServer.listen(PORT, () =>
+    console.log(`✅ HTTP + Socket.IO running on http://localhost:${PORT}`),
+  );
 })();

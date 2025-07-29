@@ -1,0 +1,92 @@
+[
+  {
+    "motor_index": 0,
+    "plate_text": "NLD-8392",
+    "pixel_x": 1240,
+    "pixel_y": 923,
+    "location": "left",
+    "group_id": 1,
+    "image_filename": "left_2025-07-29-22-33.jpg"
+  },
+  {
+    "motor_index": 1,
+    "plate_text": "PCT-2905",
+    "pixel_x": 924,
+    "pixel_y": 1187,
+    "location": "left",
+    "group_id": 1,
+    "image_filename": "left_2025-07-29-22-33.jpg"
+  },
+  {
+    "motor_index": 2,
+    "plate_text": "NXB-1232",
+    "pixel_x": 1489,
+    "pixel_y": 652,
+    "location": "left",
+    "group_id": 1,
+    "image_filename": "left_2025-07-29-22-33.jpg"
+  },
+  {
+    "motor_index": 3,
+    "plate_text": "536-PBP",
+    "pixel_x": 775,
+    "pixel_y": 1250,
+    "location": "left",
+    "group_id": 1,
+    "image_filename": "left_2025-07-29-22-33.jpg"
+  },
+  {
+    "motor_index": 4,
+    "plate_text": "NAL-1753",
+    "pixel_x": 1053,
+    "pixel_y": 1116,
+    "location": "left",
+    "group_id": 1,
+    "image_filename": "left_2025-07-29-22-33.jpg"
+  },
+  {
+    "motor_index": 5,
+    "plate_text": "729-KU",
+    "pixel_x": 604,
+    "pixel_y": 1383,
+    "location": "left",
+    "group_id": 1,
+    "image_filename": "left_2025-07-29-22-33.jpg"
+  },
+  {
+    "motor_index": 6,
+    "plate_text": "NXB-1232",
+    "pixel_x": 1431,
+    "pixel_y": 780,
+    "location": "left",
+    "group_id": 1,
+    "image_filename": "left_2025-07-29-22-33.jpg"
+  },
+  {
+    "motor_index": 7,
+    "plate_text": "IPY-9572",
+    "pixel_x": 1150,
+    "pixel_y": 1041,
+    "location": "left",
+    "group_id": 1,
+    "image_filename": "left_2025-07-29-22-33.jpg"
+  },
+  {
+    "motor_index": 8,
+    "plate_text": "238-KY",
+    "pixel_x": 1311,
+    "pixel_y": 699,
+    "location": "left",
+    "group_id": 1,
+    "image_filename": "left_2025-07-29-22-33.jpg"
+  },
+  {
+    "motor_index": 9,
+    "plate_text": "KB-3062",
+    "pixel_x": 1366,
+    "pixel_y": 636,
+    "location": "left",
+    "group_id": 1,
+    "image_filename": "left_2025-07-29-22-33.jpg"
+  }
+]
