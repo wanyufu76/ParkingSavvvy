@@ -478,15 +478,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     const validatedData = insertImageUploadSchema.parse(uploadData);
     const upload_record = await storage.createImageUpload(validatedData);
-    res.status(201).json(upload_record);
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return res.status(400).json({ message: "Invalid data", errors: error.errors });
+
+    // ========== 新增：自動觸發 Python 融合處理 ==========
+    const baseMap = {
+      left: { base: "base_A01.jpg", output: "A01_output.jpg" },
+      mid: { base: "base_A02.jpg", output: "A02_output.jpg" },
+      right: { base: "base_A03.jpg", output: "A03_output.jpg" },
+    };
+
+    if (baseMap[location]) {
+      const processedPath = path.join("processed_images", baseMap[location].output);
+      const basePath = fs.existsSync(processedPath)
+        ? processedPath  // 如果已經有融合圖，就拿它來當 base
+        : path.join("base_images", baseMap[location].base); // 否則用初始 base 圖
+      const inputPath = path.join("uploads", safeFilename);
+      const outputPath = path.join("processed_images", baseMap[location].output);
+
+
+      // ✅ 加上這一行讓你看得到目前執行什麼
+      console.log(`🔧 正在進行融合處理：python3 sift_v1.py ${basePath} ${inputPath} ${outputPath}`);
+
+      const python = spawn("python", [
+        "sift_v1.py",
+        basePath,
+        inputPath,
+        outputPath,
+      ]);
+
+      python.stdout.on("data", (data) => console.log(`融合 stdout: ${data}`));
+      python.stderr.on("data", (data) => console.error(`融合 stderr: ${data}`));
+      python.on("close", (code) => {
+        if (code === 0) {
+          console.log("融合處理成功 ✅");
+        } else {
+          console.error("融合處理失敗 ❌");
+        }
+      });
     }
-    console.error("Error uploading file:", error);
-    res.status(500).json({ message: "Failed to upload file" });
-  }
-});
+    res.status(201).json(upload_record);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid data", errors: error.errors });
+      }
+      console.error("Error uploading file:", error);
+      res.status(500).json({ message: "Failed to upload file" });
+    }
+  });
 
   app.get("/api/uploads", requireAuth, async (req, res) => {
     try {

@@ -26,6 +26,8 @@ initAutoRunner(io);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use("/uploads", express.static(path.join(path.resolve(), "uploads")));
+app.use("/processed_images", express.static(path.join(path.resolve(), "processed_images")));
+app.use("/base_images", express.static(path.join(path.resolve(), "base_images")));
 app.use(express.static("dist"));
 
 /*******************************************************************

@@ -1,0 +1,82 @@
+[
+  {
+    "motor_index": 0,
+    "real_x": 1438.7334096729755,
+    "real_y": -2571.725962638855,
+    "plate_text": "CC-0507",
+    "match_distance": 156.07699856084074,
+    "location": "left"
+  },
+  {
+    "motor_index": 1,
+    "real_x": 1193.2171680927277,
+    "real_y": -3052.0434913635254,
+    "plate_text": "729-KUI",
+    "match_distance": 208.42688952805068,
+    "location": "left"
+  },
+  {
+    "motor_index": 2,
+    "real_x": 1342.3582655787468,
+    "real_y": -2743.8101415634155,
+    "plate_text": "NDN-0985",
+    "match_distance": 113.37270179640947,
+    "location": "left"
+  },
+  {
+    "motor_index": 3,
+    "real_x": 1570.6222124695778,
+    "real_y": -2263.798783302307,
+    "plate_text": "IND-708",
+    "match_distance": 616.386438959981,
+    "location": "left"
+  },
+  {
+    "motor_index": 4,
+    "real_x": 1249.275758177042,
+    "real_y": -2920.221124649048,
+    "plate_text": "NPW-1600",
+    "match_distance": 128.71220839239118,
+    "location": "left"
+  },
+  {
+    "motor_index": 5,
+    "real_x": 1295.344060152769,
+    "real_y": -2869.0478620529175,
+    "plate_text": "536-PBP",
+    "match_distance": 202.3207313349194,
+    "location": "left"
+  },
+  {
+    "motor_index": 6,
+    "real_x": 1386.405963897705,
+    "real_y": -2639.3497457504272,
+    "plate_text": "NPR-0767",
+    "match_distance": 107.60689772817425,
+    "location": "left"
+  },
+  {
+    "motor_index": 7,
+    "real_x": 1539.275828719139,
+    "real_y": -2341.378257751465,
+    "plate_text": "IND-708",
+    "match_distance": 309.553297630884,
+    "location": "left"
+  },
+  {
+    "motor_index": 8,
+    "real_x": 1492.143698990345,
+    "real_y": -2412.9777660369873,
+    "plate_text": "IND-708",
+    "match_distance": 263.002483784784,
+    "location": "left"
+  },
+  {
+    "motor_index": 9,
+    "real_x": 1509.840619802475,
+    "real_y": -2380.8702850341797,
+    "plate_text": "IND-708",
+    "match_distance": 120.93405835248701,
+    "location": "left"
+  }
+]

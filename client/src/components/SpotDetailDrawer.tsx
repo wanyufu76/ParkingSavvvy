@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Navigation as NavigationIcon, X } from "lucide-react";
 import type { ParkingSpot } from "@shared/schema";
@@ -8,29 +9,39 @@ interface Props {
 }
 
 export default function SpotDetailDrawer({ spot, onClose }: Props) {
+  const [uploadedSpots, setUploadedSpots] = useState<string[]>([]);
+
+  useEffect(() => {
+    fetch("/api/uploads")
+      .then((res) => res.json())
+      .then((data) => {
+        const uploaded = data.map((item: any) => item.location); // e.g., "left", "mid", "right"
+        setUploadedSpots(uploaded);
+      })
+      .catch(() => {
+        setUploadedSpots([]);
+      });
+  }, []);
+
   if (!spot) return null;
 
   const lat = parseFloat(spot.latitude);
   const lng = parseFloat(spot.longitude);
 
-  // ✅ 模擬子車格 subSpots（之後可改成從資料庫帶入）
   const subSpots = [
-    {
-      id: "A01",
-      name: "A01",
-      streetViewPosition: { lat: 25.01196, lng: 121.54057 },
-    },
-    {
-      id: "A02",
-      name: "A02",
-      streetViewPosition: { lat: 25.011865, lng: 121.540655 },
-    },
-    {
-      id: "A03",
-      name: "A03",
-      streetViewPosition: { lat: 25.011775, lng: 121.54074 },
-    },
+    { id: "A01", name: "A01", location: "left" },
+    { id: "A02", name: "A02", location: "mid" },
+    { id: "A03", name: "A03", location: "right" },
   ];
+
+  const handleOpenImage = (id: string, location: string) => {
+    const processedUrl = `/processed_images/${id}_output.jpg`;
+    const baseUrl = `/base_images/base_${id}.jpg`;
+
+    const useProcessed = uploadedSpots.includes(location);
+    const imageUrl = useProcessed ? processedUrl : baseUrl;
+    window.open(imageUrl, "_blank");
+  };
 
   return (
     <div className="fixed top-100 right-10 w-90 max-h-[80vh] overflow-y-auto bg-white shadow-lg border rounded-lg z-50 p-5 space-y-4">
@@ -67,12 +78,8 @@ export default function SpotDetailDrawer({ spot, onClose }: Props) {
             key={ps.id}
             variant="outline"
             className="w-full"
-            onClick={() =>
-              window.open(
-                `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${ps.streetViewPosition.lat},${ps.streetViewPosition.lng}`,
-                )
-              }
-            >
+            onClick={() => handleOpenImage(ps.id, ps.location)}
+          >
               街景：{ps.name}
             </Button>
           ))}
