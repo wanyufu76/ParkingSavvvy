@@ -86,27 +86,33 @@ export default function ProfileDialog({ children }: ProfileDialogProps) {
   // 標記通知為已讀
   const markAsReadMutation = useMutation({
     mutationFn: async (notificationId: number) => {
-      await apiRequest("POST", `/api/notifications/${notificationId}/read`);
+      await apiRequest("PATCH", `/api/notifications/${notificationId}/read`);
     },
     onSuccess: () => {
-      // 🔹 重新整理通知列表，讓 Badge 更新
       queryClient.invalidateQueries({ queryKey: ["/api/notifications"] });
     },
   });
 
-  // 標記所有通知為已讀
-  const markAllAsReadMutation = useMutation({
-    mutationFn: async () => {
-      await apiRequest("POST", "/api/notifications/mark-all-read");
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/notifications"] });
-      toast({
-        title: "已讀取所有通知",
-        description: "所有通知已標記為已讀",
-      });
-    },
-  });
+// 標記所有通知為已讀
+const markAllAsReadMutation = useMutation({
+  mutationFn: async () => {
+    await apiRequest("PATCH", "/api/notifications/mark-all-read");
+  },
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ["/api/notifications"] });
+    toast({
+      title: "已讀取所有通知",
+      description: "所有通知已標記為已讀",
+    });
+  },
+  onError: (error: any) => {
+    toast({
+      title: "錯誤",
+      description: error.message || "標記失敗",
+      variant: "destructive",
+    });
+  },
+});
 
   const onSubmit = (data: ChangePasswordData) => {
     changePasswordMutation.mutate(data);
@@ -149,13 +155,11 @@ export default function ProfileDialog({ children }: ProfileDialogProps) {
               <CardContent className="space-y-4">
                 {Array.isArray(notifications) && notifications.length > 0 && (
                   <Button
-                    onClick={() => markAllAsReadMutation.mutate()}
-                    disabled={markAllAsReadMutation.isPending || unreadCount === 0}
-                    variant="outline"
-                    size="sm"
-                  >
-                    標記全部為已讀
-                  </Button>
+                  variant="outline"
+                  onClick={() => markAllAsReadMutation.mutate()}
+                >
+                  全部標記已讀
+                </Button>
                 )}
                 
                 <div className="space-y-3 max-h-60 overflow-y-auto">

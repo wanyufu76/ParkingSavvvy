@@ -805,6 +805,30 @@ app.post("/api/uploads", requireAuth, upload.single("file"), async (req, res) =>
     }
   });
 
+  app.patch("/api/notifications/:id/read", requireAuth, async (req, res) => {
+    try {
+      const notificationId = parseInt(req.params.id);
+      await storage.markNotificationAsRead(notificationId);
+      res.json({ message: "通知已標記為已讀" });
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
+      res.status(500).json({ message: "Failed to mark notification as read" });
+    }
+  });
+
+  app.patch("/api/notifications/mark-all-read", requireAuth, async (req, res) => {
+  try {
+    // 用 passport 的 req.user，而不是 req.session.user
+    const userId = (req.user as any).id;
+
+    await storage.markAllNotificationsAsRead(userId);
+    res.json({ message: "所有通知已標記為已讀" });
+  } catch (error) {
+    console.error("Error marking all notifications as read:", error);
+    res.status(500).json({ message: "Failed to mark all notifications as read" });
+  }
+});
+
   // 管理員回覆聯絡訊息時創建用戶通知
   app.post("/admin/api/messages/:id/reply-with-notification", requireAdmin, async (req, res) => {
     try {

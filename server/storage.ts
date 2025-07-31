@@ -263,13 +263,22 @@ export class DatabaseStorage implements IStorage {
     return created;
   }
 
+  // 單筆已讀
   async markNotificationAsRead(id: number): Promise<void> {
-    await db.update(userNotifications).set({ isRead: true }).where(eq(userNotifications.id, id));
+    await db
+      .update(userNotifications)
+      .set({ isRead: true })
+      .where(eq(userNotifications.id, id));
   }
 
+  // 全部已讀
   async markAllNotificationsAsRead(userId: number): Promise<void> {
-    await db.update(userNotifications).set({ isRead: true }).where(eq(userNotifications.userId, userId));
+    await db
+      .update(userNotifications)
+      .set({ isRead: true })
+      .where(eq(userNotifications.userId, userId));
   }
-}
+
+  }
 
 export const storage = new DatabaseStorage();
