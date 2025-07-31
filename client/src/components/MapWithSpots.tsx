@@ -43,6 +43,7 @@ export default function MapWithSpots({ onSpotClick }: Props) {
     zoom: 16,
     streetViewControl: true,
     mapTypeControl: false,
+    scaleControl: true,
   });
   (window as any).dbgMap = map;   // ← 只在開發環境加
 
