@@ -31,11 +31,13 @@ export const users = pgTable("users", {
   username: varchar("username", { length: 50 }).unique().notNull(),
   email: varchar("email").unique().notNull(),
   password: varchar("password").notNull(), // Will store hashed passwords
+  role: varchar("role", { length: 50 }).default("user").notNull(),
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
   profileImageUrl: varchar("profile_image_url"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
+  
 });
 
 // Parking spots table
@@ -193,6 +195,7 @@ export const insertUserSchema = createInsertSchema(users).omit({
   password: z.string().min(6, "密碼至少需要6個字元"),
   firstName: z.string().optional(),
   lastName: z.string().optional(),
+  role: z.enum(["user", "admin"]).default("user"),
 });
 
 export const loginSchema = z.object({

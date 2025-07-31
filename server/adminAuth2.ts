@@ -24,28 +24,30 @@ export function setupAdminAuth(app: Express) {
     try {
       const { username, password } = req.body;
       console.log("Admin login attempt for:", username);
-      
-      const admin = await storage.getAdminByUsername(username);
-      if (!admin || !admin.isActive) {
-        console.log("Admin not found or inactive:", username);
-        return res.status(401).json({ message: "帳號不存在或已停用" });
+
+      // 從 users 表裡抓使用者
+      const user = await storage.getUserByUsername(username);
+
+      // 檢查存在 & role 是否是 admin/super_admin
+      if (!user || !["admin", "super_admin"].includes(user.role)) {
+        console.log("Not an admin account:", username);
+        return res.status(401).json({ message: "帳號不存在或不是管理員" });
       }
-      
-      const isValid = await comparePasswords(password, admin.password);
+
+      // 檢查密碼
+      const isValid = await comparePasswords(password, user.password);
       if (!isValid) {
         console.log("Invalid password for admin:", username);
         return res.status(401).json({ message: "密碼錯誤" });
       }
 
       // 設置管理員會話
-      (req.session as any).adminId = admin.id;
+      (req.session as any).adminId = user.id;
       (req.session as any).isAdmin = true;
-      
-      // 更新最後登入時間
-      await storage.updateAdminLastLogin(admin.id);
-      
+
       console.log("Admin login successful:", username, "Session ID:", req.sessionID);
-      res.json({ success: true, admin: { ...admin, isAdmin: true } });
+      const { password: _pw, ...safeUser } = user;
+      res.json({ success: true, admin: { ...safeUser, isAdmin: true } });
     } catch (error) {
       console.error("Admin login error:", error);
       res.status(500).json({ message: "登入失敗" });
@@ -64,18 +66,19 @@ export function setupAdminAuth(app: Express) {
     try {
       const adminId = (req.session as any)?.adminId;
       console.log("Admin me check - adminId:", adminId, "session:", req.sessionID);
-      
+
       if (!adminId) {
         return res.status(401).json({ message: "Unauthorized" });
       }
-      
-      const admin = await storage.getAdmin(adminId);
-      if (!admin) {
+
+      const user = await storage.getUser(adminId);
+      if (!user || !["admin", "super_admin"].includes(user.role)) {
         (req.session as any).adminId = null;
         return res.status(401).json({ message: "Unauthorized" });
       }
-      
-      res.json({ ...admin, isAdmin: true });
+
+      const { password: _pw, ...safeUser } = user;
+      res.json({ ...safeUser, isAdmin: true });
     } catch (error) {
       console.error("Admin me error:", error);
       res.status(500).json({ message: "Failed to fetch admin info" });
@@ -94,15 +97,16 @@ export function requireAdmin(req: any, res: any, next: any) {
 
 export async function createDefaultAdmin() {
   try {
-    const existingAdmin = await storage.getAdminByUsername("admin");
+    const existingAdmin = await storage.getUserByUsername("admin");
     if (!existingAdmin) {
       const hashedPassword = await hashPassword("admin123456");
-      await storage.createAdmin({
+      await storage.createUser({
         username: "admin",
         password: hashedPassword,
         email: "admin@example.com",
-        role: "super_admin",
-        isActive: true,
+        firstName: "Default",
+        lastName: "Admin",
+        role: "super_admin",   // 🔹直接使用 role
       });
       console.log("Default admin created: admin/admin123456");
     }

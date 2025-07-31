@@ -12,6 +12,7 @@ import {
   Mail,
   LogOut,
   Settings,
+  Shield,   // ✅ 新增一個 icon (管理員)
 } from "lucide-react";
 import ProfileDialog from "@/components/ProfileDialog";
 
@@ -22,6 +23,7 @@ interface AuthUser {
   lastName?: string;
   name?: string;
   email?: string;
+  role?: string; // ✅ 加入 role
 }
 
 export default function Navigation() {
@@ -91,6 +93,21 @@ export default function Navigation() {
                       </Link>
                     );
                   })}
+
+                  {/* ✅ 只有 admin 才能看到 */}
+                  {u?.role === "admin" && (
+                    <Link
+                      href="/admin/login"
+                      className={`px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 flex items-center ${
+                        location === "/admin/login"
+                          ? "text-primary font-semibold"
+                          : "text-gray-700 hover:text-primary"
+                      }`}
+                    >
+                      <Shield className="h-4 w-4 mr-1" />
+                      管理員頁面
+                    </Link>
+                  )}
 
                   <ProfileDialog>
                     <Button
@@ -174,6 +191,22 @@ export default function Navigation() {
                   );
                 })}
 
+                {/* ✅ 手機版 admin 按鈕 */}
+                {u?.role === "admin" && (
+                  <Link
+                    href="/admin"
+                    className={`block px-3 py-2 text-base font-medium transition-colors duration-200 flex items-center ${
+                      location === "//admin/login"
+                        ? "text-primary font-semibold"
+                        : "text-gray-700 hover:text-primary"
+                    }`}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <Shield className="h-4 w-4 mr-2" />
+                    管理員頁面
+                  </Link>
+                )}
+
                 <ProfileDialog>
                   <Button
                     variant="ghost"
@@ -183,8 +216,8 @@ export default function Navigation() {
                     <Settings className="h-4 w-4 mr-2" />
                     個人設定
                   </Button>
-
                 </ProfileDialog>
+
                 {/* 使用者名稱 (mobile) */}
                 {displayName && (
                   <span className="block px-3 py-2 text-base font-medium text-gray-700">

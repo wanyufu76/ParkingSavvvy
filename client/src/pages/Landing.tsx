@@ -226,12 +226,6 @@ export default function Landing() {
           <div className="mt-8 pt-8 border-t border-gray-800 text-center text-gray-400">
             <p>&copy; 2024 位無一失. 版權所有 | 國立台灣科技大學專題作品</p>
             <div className="mt-4">
-              <a 
-                href="/admin/login"
-                className="text-xs text-gray-500 hover:text-gray-300 transition-colors"
-              >
-                管理員登入
-              </a>
             </div>
           </div>
         </div>

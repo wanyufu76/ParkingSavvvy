@@ -30,6 +30,16 @@ async function comparePasswords(supplied: string, stored: string) {
   return timingSafeEqual(hashedBuf, suppliedBuf);
 }
 
+/* ─────────────── 角色驗證 Middleware ─────────────── */
+export function requireRole(role: string) {
+  return (req: any, res: any, next: any) => {
+    if (!req.user || req.user.role !== role) {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+    next();
+  };
+}
+
 /* ─────────────── 主函式 ─────────────── */
 export function setupAuth(app: Express) {
   /* Session Store：明確指定 sessions 表，自動建表 */
@@ -108,6 +118,7 @@ export function setupAuth(app: Express) {
         password: await hashPassword(password),
         firstName,
         lastName,
+        role: "user",   // 預設註冊都是 user
       });
 
       // 3. 立即登入
@@ -125,7 +136,7 @@ export function setupAuth(app: Express) {
   /* 登入 */
   app.post("/api/login", passport.authenticate("local"), (req, res) => {
     const { password: _pw, ...safeUser } = req.user!;
-    res.status(200).json(safeUser);
+    res.status(200).json(safeUser);  // safeUser 裡面會包含 role
   });
 
   /* 登出 */
@@ -147,5 +158,10 @@ export function setupAuth(app: Express) {
     if (!req.isAuthenticated()) return res.sendStatus(401);
     const { password: _pw, ...safeUser } = req.user!;
     res.json(safeUser);
+  });
+
+  /* 測試用：只有 admin 才能存取 */
+  app.get("/api/admin-only", requireRole("admin"), (req, res) => {
+    res.json({ message: "Hello Admin!" });
   });
 }

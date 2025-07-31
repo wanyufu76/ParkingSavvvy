@@ -93,7 +93,10 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createUser(userData: InsertUser): Promise<User> {
-    const [user] = await db.insert(users).values(userData).returning();
+    const [user] = await db.insert(users).values({
+      ...userData,
+      role: userData.role ?? "user", // 預設為 user
+    }).returning();
     return user;
   }
 
@@ -241,8 +244,18 @@ export class DatabaseStorage implements IStorage {
   }
 
   // User notification operations
-  async getUserNotifications(userId: number): Promise<UserNotification[]> {
-    return await db.select().from(userNotifications).where(eq(userNotifications.userId, userId)).orderBy(desc(userNotifications.createdAt));
+  async getUserNotifications(userId: number): Promise<any[]> {
+    return await db
+      .select({
+        id: userNotifications.id,
+        message: userNotifications.message,
+        isRead: userNotifications.isRead,
+        createdAt: userNotifications.createdAt,
+      })
+      .from(userNotifications)
+      .leftJoin(users, eq(userNotifications.userId, users.id))
+      .where(eq(userNotifications.userId, userId))
+      .orderBy(desc(userNotifications.createdAt));
   }
 
   async createUserNotification(notification: InsertUserNotification): Promise<UserNotification> {

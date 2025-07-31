@@ -1,4 +1,5 @@
-import { Switch, Route } from "wouter";
+import { useEffect } from "react";
+import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -17,6 +18,15 @@ import ParkingAdmin from "@/pages/ParkingAdmin";
 import AdminLogin from "@/pages/AdminLogin";
 import AdminDashboard from "@/pages/AdminDashboard";
 
+// ✅ 專門處理 /admin redirect
+function AdminRedirect() {
+  const [, navigate] = useLocation();
+  useEffect(() => {
+    navigate("/admin/dashboard");
+  }, [navigate]);
+  return null;
+}
+
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
 
@@ -25,10 +35,11 @@ function Router() {
       {/* 管理員路由 - 獨立認證 */}
       <Route path="/admin/login" component={AdminLogin} />
       <Route path="/admin/dashboard" component={AdminDashboard} />
-      
+      <Route path="/admin" component={AdminRedirect} />
+
       {/* 認證路由 */}
       <Route path="/auth" component={AuthPage} />
-      
+
       {isLoading ? (
         // 載入中顯示空白頁面避免閃爍
         <Route path="*">

@@ -25,6 +25,17 @@ const changePasswordSchema = z.object({
 
 type ChangePasswordData = z.infer<typeof changePasswordSchema>;
 
+// 🔹 定義通知型別，包含 username & role
+type NotificationWithUser = {
+  id: number;
+  title?: string;
+  message: string;
+  isRead: boolean;
+  createdAt: string;
+  username?: string;
+  role?: string;
+};
+
 interface ProfileDialogProps {
   children: React.ReactNode;
 }
@@ -45,7 +56,7 @@ export default function ProfileDialog({ children }: ProfileDialogProps) {
   });
 
   // 獲取通知
-  const { data: notifications = [] } = useQuery({
+  const { data: notifications = [] } = useQuery<NotificationWithUser[]>({
     queryKey: ["/api/notifications"],
   });
 
@@ -78,6 +89,7 @@ export default function ProfileDialog({ children }: ProfileDialogProps) {
       await apiRequest("POST", `/api/notifications/${notificationId}/read`);
     },
     onSuccess: () => {
+      // 🔹 重新整理通知列表，讓 Badge 更新
       queryClient.invalidateQueries({ queryKey: ["/api/notifications"] });
     },
   });
@@ -152,7 +164,7 @@ export default function ProfileDialog({ children }: ProfileDialogProps) {
                       暫無通知
                     </p>
                   ) : (
-                    notifications.map((notification: any) => (
+                    notifications.map((notification) => (
                       <div
                         key={notification.id}
                         className={`p-3 rounded-lg border ${
@@ -166,9 +178,6 @@ export default function ProfileDialog({ children }: ProfileDialogProps) {
                             <h4 className="font-medium">{notification.title}</h4>
                             <p className="text-sm text-muted-foreground mt-1">
                               {notification.message}
-                            </p>
-                            <p className="text-xs text-muted-foreground mt-2">
-                              {new Date(notification.createdAt).toLocaleString()}
                             </p>
                           </div>
                           {!notification.isRead && (
