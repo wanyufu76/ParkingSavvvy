@@ -20,7 +20,7 @@ import {
   type InsertAdmin,
   type UserNotification,
   type InsertUserNotification,
-} from "@shared/schema";
+} from "../shared/schema";
 import { db } from "./db";
 import { eq, and, desc } from "drizzle-orm";
 
