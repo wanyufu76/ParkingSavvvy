@@ -1,4 +1,4 @@
-// server/utils/processImage.ts
+// server/processImage.ts
 import fs from "fs";
 import path from "path";
 import { spawn } from "child_process";
