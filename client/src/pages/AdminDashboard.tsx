@@ -17,6 +17,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { ContactMessage, ParkingSpot } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import AddParkingSpotDialog from "@/components/AddParkingSpotDialog";
+import EditParkingSpotDialog from "@/components/EditParkingSpotDialog";
 
 export default function AdminDashboard() {
   const { toast } = useToast();
@@ -27,6 +28,8 @@ export default function AdminDashboard() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [addOpen, setAddOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [editingSpot, setEditingSpot] = useState<ParkingSpot | null>(null);
 
   /* -------------------- Queries -------------------- */
   const { data: admin, isLoading: adminLoading, error: adminError } = useQuery({
@@ -73,7 +76,7 @@ export default function AdminDashboard() {
     },
     onError: () => toast({ title: "刪除失敗", description: "請稍後再試", variant: "destructive" })
   });
-
+  
   const deleteVideoMutation = useMutation({
     mutationFn: async (videoId: number) =>
       (await apiRequest("DELETE", `/admin/api/videos/${videoId}`)).json(),
@@ -278,7 +281,14 @@ export default function AdminDashboard() {
                           <TableCell>NT$ {spot.pricePerHour}</TableCell>
                           <TableCell>
                             <div className="flex gap-2">
-                              <Button variant="outline" size="sm">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  setEditingSpot(spot);
+                                  setEditOpen(true);
+                                }}
+                              >
                                 <Edit className="w-4 h-4" />
                               </Button>
                               <Button
@@ -299,6 +309,11 @@ export default function AdminDashboard() {
               </CardContent>
             </Card>
             <AddParkingSpotDialog open={addOpen} onOpenChange={setAddOpen} />
+            <EditParkingSpotDialog
+              open={editOpen}
+              onOpenChange={setEditOpen}
+              spot={editingSpot}
+            />
           </TabsContent>
 
           {/* -------- 影片管理 -------- */}
