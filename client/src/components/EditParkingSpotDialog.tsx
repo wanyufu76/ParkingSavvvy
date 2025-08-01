@@ -54,55 +54,67 @@ export default function EditParkingSpotDialog({ open, onOpenChange, spot }: Prop
   }, [spot]);
 
   /* ---------------- 編輯 API ---------------- */
-  const updateSpot = useMutation({
-    mutationFn: async () => {
-      if (!spot) throw new Error("No spot to edit");
-      const res = await apiRequest("PUT", `/admin/api/parking-spots/${spot.id}`, {
-        ...form,
-        latitude: Number(form.latitude),
-        longitude: Number(form.longitude),
-      });
-      return res.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/admin/api/parking-spots"] });
-      toast({ title: "停車格已更新！" });
-      onOpenChange(false);
-    },
-    onError: (e: any) =>
-      toast({
-        title: "更新失敗",
-        description: e?.message ?? JSON.stringify(e),
-        variant: "destructive",
-      }),
-  });
+const updateSpot = useMutation({
+  mutationFn: async () => {
+    if (!spot) throw new Error("No spot to edit");
+    const res = await apiRequest("PATCH", `/api/parking-spots/${spot.id}`, {
+      ...form,
+      latitude: Number(form.latitude),
+      longitude: Number(form.longitude),
+    });
+    return res.json();
+  },
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ["/api/parking-spots"] });
+    toast({ title: "停車格已更新！請重新整理頁面" });
+    onOpenChange(false);
+  },
+  onError: (e: any) =>
+    toast({
+      title: "更新失敗",
+      description: e?.message ?? JSON.stringify(e),
+      variant: "destructive",
+    }),
+});
 
   /* ---------------- 初始化地圖 ---------------- */
   useEffect(() => {
     if (!open) return;
     if (!mapContainerRef.current) return;
 
-    if (!mapRef.current) {
-      mapRef.current = new google.maps.Map(mapContainerRef.current, {
-        center: { lat: form.latitude || 25.0136, lng: form.longitude || 121.5408 },
-        zoom: 16,
-      });
+    if (!(window as any).google) {
+      console.warn("Google Maps API 尚未載入");
+      return;
     }
 
-    if (spot) {
-      const pos = { lat: Number(form.latitude), lng: Number(form.longitude) };
-      mapRef.current.setCenter(pos);
-      if (markerRef.current) {
-        markerRef.current.setPosition(pos);
-      } else {
-        markerRef.current = new google.maps.Marker({
-          position: pos,
-          map: mapRef.current,
-          title: spot.name,
-        });
-      }
-    }
-  }, [open, spot, form.latitude, form.longitude]);
+    const pos = { lat: Number(form.latitude) || 25.0136, lng: Number(form.longitude) || 121.5408 };
+
+    // 每次打開 Dialog 都重建地圖
+    const map = new google.maps.Map(mapContainerRef.current, {
+      center: pos,
+      zoom: 16,
+    });
+    mapRef.current = map;
+
+    // 建立 marker
+    markerRef.current = new google.maps.Marker({
+      position: pos,
+      map: map,
+      title: spot?.name,
+    });
+
+    // 延遲刷新 (避免灰色地圖)
+    const timer = setTimeout(() => {
+      google.maps.event.trigger(map, "resize");
+      map.setCenter(pos);
+    }, 350); // 350ms 配合 Dialog 動畫
+
+    return () => {
+      clearTimeout(timer);
+      markerRef.current = undefined;
+      mapRef.current = undefined;
+    };
+  }, [open, form.latitude, form.longitude, spot]);
 
   /* ---------------- Render ---------------- */
   return (
@@ -115,8 +127,8 @@ export default function EditParkingSpotDialog({ open, onOpenChange, spot }: Prop
           </DialogTitle>
         </DialogHeader>
 
-        {/* 地圖 */}
-        <div ref={mapContainerRef} className="h-64 w-full rounded mb-4" />
+        {/* 地圖容器 */}
+        <div ref={mapContainerRef} className="h-64 w-full rounded mb-4 border" />
 
         {/* 已選座標顯示 */}
         <p className="text-xs text-blue-600 mb-2">

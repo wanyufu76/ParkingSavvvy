@@ -80,7 +80,7 @@ export default function SpotDetailDrawer({ spot, onClose }: Props) {
             className="w-full"
             onClick={() => handleOpenImage(ps.id, ps.location)}
           >
-              街景：{ps.name}
+              查看街景：{ps.name}
             </Button>
           ))}
         </div>
