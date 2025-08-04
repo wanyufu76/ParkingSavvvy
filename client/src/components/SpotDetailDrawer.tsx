@@ -44,46 +44,54 @@ export default function SpotDetailDrawer({ spot, onClose }: Props) {
   };
 
   return (
-    <div className="fixed top-100 right-10 w-90 max-h-[80vh] overflow-y-auto bg-white shadow-lg border rounded-lg z-50 p-5 space-y-4">
-      <div className="flex justify-between items-start">
-        <h3 className="text-lg font-semibold">{spot.name}</h3>
-        <Button variant="ghost" size="icon" onClick={onClose}>
-          <X className="h-5 w-5" />
-        </Button>
-      </div>
-
-      <p className="text-sm text-muted-foreground">{spot.address}</p>
-      <p>NT$ {spot.pricePerHour || 20} / 小時</p>
-
-      {/* 導航按鈕（主停車場） */}
-      <div className="grid gap-2">
-        <Button
-          className="w-full"
-          onClick={() =>
-            window.open(
-              `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`,
-              "_blank"
-            )
-          }
-        >
-          <NavigationIcon className="h-4 w-4 mr-1" />
-          導航
-        </Button>
-      </div>
-
-      {/* 多個街景按鈕 */}
-      <div className="mt-4 space-y-2">
-        {subSpots.map((ps) => (
-          <Button
-            key={ps.id}
-            variant="outline"
-            className="w-full"
-            onClick={() => handleOpenImage(ps.id, ps.location)}
-          >
-              查看街景：{ps.name}
-            </Button>
-          ))}
-        </div>
+  <div
+    className="
+      fixed bg-white shadow-lg border rounded-lg z-50 p-5 space-y-4
+      overflow-y-auto max-h-[70vh]
+      top-20 right-4
+      w-[85%] max-w-sm     /* 手機：佔 85%，最大 sm */
+      md:w-[400px]         /* 平板 / 桌機：固定 400px */
+    "
+  >
+    <div className="flex justify-between items-start">
+      <h3 className="text-lg font-semibold">{spot.name}</h3>
+      <Button variant="ghost" size="icon" onClick={onClose}>
+        <X className="h-5 w-5" />
+      </Button>
     </div>
-  );
+
+    <p className="text-sm text-muted-foreground">{spot.address}</p>
+    <p>NT$ {spot.pricePerHour || 20} / 小時</p>
+
+    {/* 導航按鈕（主停車場） */}
+    <div className="grid gap-2">
+      <Button
+        className="w-full"
+        onClick={() =>
+          window.open(
+            `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`,
+            "_blank"
+          )
+        }
+      >
+        <NavigationIcon className="h-4 w-4 mr-1" />
+        導航
+      </Button>
+    </div>
+
+    {/* 多個街景按鈕 */}
+    <div className="mt-4 space-y-2">
+      {subSpots.map((ps) => (
+        <Button
+          key={ps.id}
+          variant="outline"
+          className="w-full"
+          onClick={() => handleOpenImage(ps.id, ps.location)}
+        >
+          查看街景：{ps.name}
+        </Button>
+      ))}
+    </div>
+  </div>
+);
 }
