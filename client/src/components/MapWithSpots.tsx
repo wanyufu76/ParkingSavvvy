@@ -101,6 +101,155 @@ export default function MapWithSpots({ onSpotClick }: Props) {
     ],
   },
   {
+    spotName: "基隆路四段73巷路邊停車格B",
+    point: { lat: 25.012143, lng: 121.540345 },
+    iconUrl: "https://cdn-icons-png.flaticon.com/512/608/608690.png",
+    rects: [
+      {
+        name: "B01",
+        coords: [
+          { lat: 25.012332, lng: 121.540246 },
+          { lat: 25.012273, lng: 121.540296 },
+          { lat: 25.012243, lng: 121.540254 },
+          { lat: 25.012303, lng: 121.540204 },
+        ],
+        label: { lat: 25.012310, lng: 121.540291 },
+        pano: { lat: 25.012287, lng: 121.540247 },
+      },
+      {
+        name: "B02",
+        coords: [
+          { lat: 25.012252, lng: 121.540317 },
+          { lat: 25.012190, lng: 121.540368 },
+          { lat: 25.012159, lng: 121.540322 },
+          { lat: 25.012222, lng: 121.540272 },
+        ],
+        label: { lat: 25.012229, lng: 121.540358 },
+        pano: { lat: 25.012204, lng: 121.540321 },
+      },
+      {
+        name: "B03",
+        coords: [
+          { lat: 25.012165, lng: 121.540382 },
+          { lat: 25.012102, lng: 121.540438 },
+          { lat: 25.012072, lng: 121.540392 },
+          { lat: 25.012136, lng: 121.540340 },
+        ],
+        label: { lat: 25.012126, lng: 121.540439 },
+        pano: { lat: 25.012100, lng: 121.540394 },
+      },
+      {
+        name: "B04",
+        coords: [
+          { lat: 25.012079, lng: 121.540458 },
+          { lat: 25.012016, lng: 121.540511 },
+          { lat: 25.011983, lng: 121.540461 },
+          { lat: 25.012046, lng: 121.540411 },
+        ],
+        label: { lat: 25.012048, lng: 121.540507 },
+        pano: { lat: 25.012019, lng: 121.540407 },
+      },
+    ],
+  },
+  {
+    spotName: "基隆路四段73巷路邊停車格C",
+    point: { lat: 25.012775, lng: 121.539811 },
+    iconUrl: "https://cdn-icons-png.flaticon.com/512/608/608690.png",
+    rects: [
+      {
+        name: "C01",
+        coords: [
+          { lat: 25.012921, lng: 121.539757 },
+          { lat: 25.012858, lng: 121.539813 },
+          { lat: 25.012829, lng: 121.539772 },
+          { lat: 25.012893, lng: 121.539718 },
+        ],
+        label: { lat: 25.012900, lng: 121.539800 },
+        pano: { lat: 25.012874, lng: 121.539762 },
+      },
+      {
+        name: "C02",
+        coords: [
+          { lat: 25.012836, lng: 121.539832 },
+          { lat: 25.012773, lng: 121.539887 },
+          { lat: 25.012743, lng: 121.539843 },
+          { lat: 25.012807, lng: 121.539788 },
+        ],
+        label: { lat: 25.012816, lng: 121.539872 },
+        pano: { lat: 25.012788, lng: 121.539835 },
+      },
+      {
+        name: "C03",
+        coords: [
+          { lat: 25.012750, lng: 121.539905 },
+          { lat: 25.012686, lng: 121.539959 },
+          { lat: 25.012655, lng: 121.539913 },
+          { lat: 25.012720, lng: 121.539859 },
+        ],
+        label: { lat: 25.012729, lng: 121.539947 },
+        pano: { lat: 25.012704, lng: 121.539905 },
+      },
+    ],
+  },
+  {
+    spotName: "基隆路四段73巷路邊停車格D",
+    point: { lat: 25.012847, lng: 121.539682 },
+    iconUrl: "https://cdn-icons-png.flaticon.com/512/608/608690.png",
+    rects: [
+      {
+        name: "D01",
+        coords: [
+          { lat: 25.012823, lng: 121.539662 },
+          { lat: 25.012714, lng: 121.539748 },
+          { lat: 25.012745, lng: 121.539795 },
+          { lat: 25.012853, lng: 121.539707 },
+        ],
+        label: { lat: 25.012751, lng: 121.539694 },
+        pano: { lat: 25.012777, lng: 121.539733 },
+      },
+    ],
+  },
+  {
+    spotName: "基隆路四段73巷路邊停車格E",
+    point: { lat: 25.012450, lng: 121.540043 },
+    iconUrl: "https://cdn-icons-png.flaticon.com/512/608/608690.png",
+    rects: [
+      {
+        name: "E01",
+        coords: [
+          { lat: 25.012568, lng: 121.539871 },
+          { lat: 25.012599, lng: 121.539917 },
+          { lat: 25.012505, lng: 121.539993 },
+          { lat: 25.012475, lng: 121.539947 },
+        ],
+        label: { lat: 25.012513, lng: 121.539892 },
+        pano: { lat: 25.012534, lng: 121.539931 },
+      },
+      {
+        name: "E02",
+        coords: [
+          { lat: 25.012453, lng: 121.539968 },
+          { lat: 25.012483, lng: 121.540010 },
+          { lat: 25.012418, lng: 121.540062 },
+          { lat: 25.012388, lng: 121.540018 },
+        ],
+        label: { lat: 25.012411, lng: 121.539981 },
+        pano: { lat: 25.012438, lng: 121.540014 },
+      },
+      {
+        name: "E03",
+        coords: [
+          { lat: 25.012369, lng: 121.540036 },
+          { lat: 25.012398, lng: 121.540080 },
+          { lat: 25.012333, lng: 121.540136 },
+          { lat: 25.012302, lng: 121.540092 },
+        ],
+        label: { lat: 25.012324, lng: 121.540049 },
+        pano: { lat: 25.012348, lng: 121.540087 },
+      },
+    ],
+  },
+  {
     spotName: "基隆路四段73巷路邊停車格F",
     point: { lat: 25.011992, lng: 121.540419 },
     iconUrl: "https://cdn-icons-png.flaticon.com/512/608/608690.png",
@@ -142,11 +291,11 @@ export default function MapWithSpots({ onSpotClick }: Props) {
   },
   {
     spotName: "基隆路四段73巷路邊停車格G",     
-    point: { lat: 25.011594, lng: 121.540730 }, // 你到時候給我正確的P點位置
+    point: { lat: 25.011594, lng: 121.540730 }, 
     iconUrl: "https://cdn-icons-png.flaticon.com/512/608/608690.png",
     rects: [
       {
-        name: "H01",
+        name: "G01",
         coords: [
           { lat: 25.011622, lng: 121.540705 },
           { lat: 25.011561, lng: 121.540752 },
@@ -160,7 +309,7 @@ export default function MapWithSpots({ onSpotClick }: Props) {
   },
   {
     spotName: "基隆路四段73巷路邊停車格H",     
-    point: { lat: 25.011488, lng: 121.540855 }, // 你到時候給我正確的P點位置
+    point: { lat: 25.011488, lng: 121.540855 }, 
     iconUrl: "https://cdn-icons-png.flaticon.com/512/608/608690.png",
     rects: [
       {
@@ -187,7 +336,6 @@ export default function MapWithSpots({ onSpotClick }: Props) {
       },
     ],
   },
-  
 ];
 
   for (const mapping of boxMappings) {

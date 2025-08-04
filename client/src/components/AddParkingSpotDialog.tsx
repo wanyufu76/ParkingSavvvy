@@ -91,17 +91,11 @@ useEffect(() => {
 
     if (!mapContainerRef.current) return;
 
-    if (mapRef.current) {
-      // ✅ 如果已經有 map，直接把它掛到新的容器
-      mapRef.current.setOptions({ mapTypeId: google.maps.MapTypeId.ROADMAP });
-      (mapRef.current as any).setDiv(mapContainerRef.current);
-      return;
-    }
-
-    // ✅ 第一次建立
+    // ✅ 每次都重新建立新的 map
     const map = new google.maps.Map(mapContainerRef.current, {
       center: { lat: 25.0136, lng: 121.5408 },
       zoom: 16,
+      mapTypeId: google.maps.MapTypeId.ROADMAP,
     });
     mapRef.current = map;
 
