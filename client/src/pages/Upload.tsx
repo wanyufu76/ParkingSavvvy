@@ -76,6 +76,7 @@ export default function Upload() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/uploads"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/points"] });
       toast({ title: "上傳成功", description: "檔案已成功上傳，正在處理中..." });
       resetForm();
     },
