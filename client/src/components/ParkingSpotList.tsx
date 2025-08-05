@@ -11,13 +11,9 @@ import { Heart, MapPin, Car, Navigation as NavigationIcon } from "lucide-react";
 import type { ParkingSpot } from "@shared/schema";
 
 interface FilterOptions {
-  searchTerm: string;
-  availabilityStatus: string;
   distanceRange: number[];
   priceRange: number[];
-  amenities: string[];
   sortBy: string;
-  showAvailableOnly: boolean;
 }
 
 interface ParkingSpotListProps {
@@ -59,17 +55,16 @@ export default function ParkingSpotList({ parkingSpots, filters, onSpotClick }: 
     return Math.round(R * c);
   };
 
+  // ✅ 只保留「距離 + 價格」篩選
   const filteredAndSortedSpots = useMemo(() => {
     return parkingSpots
       .filter((spot) => {
-        if (filters.searchTerm) {
-          const lower = filters.searchTerm.toLowerCase();
-          if (!spot.name.toLowerCase().includes(lower) && !spot.address.toLowerCase().includes(lower)) return false;
-        }
         const distance = calculateDistance(spot);
         const price = spot.pricePerHour ?? 30;
+
         if (distance > filters.distanceRange[1]) return false;
         if (price < filters.priceRange[0] || price > filters.priceRange[1]) return false;
+
         return true;
       })
       .sort((a, b) => {

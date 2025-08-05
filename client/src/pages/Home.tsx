@@ -53,24 +53,18 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState<"map" | "list">("map");
   const [selectedSpot, setSelectedSpot] = useState<(ParkingSpot & { subSpots?: any[] }) | null>(null);
   const [filters, setFilters] = useState({
-    searchTerm: "",
-    availabilityStatus: "all",
-    distanceRange: [0, 5000],
-    priceRange: [10, 200],
-    amenities: [] as string[],
-    sortBy: "distance",
-    showAvailableOnly: false,
-  });
+  searchTerm: "",
+  distanceRange: [0, 99999999],
+  priceRange: [10, 9999999],
+  sortBy: "distance",
+});
 
   const handleClearFilters = () =>
     setFilters({
       searchTerm: "",
-      availabilityStatus: "all",
       distanceRange: [0, 5000],
       priceRange: [10, 200],
-      amenities: [],
       sortBy: "distance",
-      showAvailableOnly: false,
     });
 
   const handleSpotClick = (s: ParkingSpot) => {
