@@ -56,10 +56,13 @@ export const parkingSpots = pgTable("parking_spots", {
 // 子車格表格
 export const parkingSubSpots = pgTable("parking_sub_spots", {
   id: serial("id").primaryKey(),
-  parkingSpotId: integer("parking_spot_id").notNull().references(() => parkingSpots.id),
+  spotId: integer("spot_id")
+  .notNull()
+  .references(() => parkingSpots.id),
   label: varchar("label", { length: 10 }).notNull(), // 例如 A01, A02
   latitude: decimal("latitude", { precision: 10, scale: 8 }).notNull(),
   longitude: decimal("longitude", { precision: 11, scale: 8 }).notNull(),
+  coords: jsonb("coords").$type<{ lat: number; lng: number }[]>().notNull(),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

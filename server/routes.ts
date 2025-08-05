@@ -16,6 +16,11 @@ import path from "path";
 import fs from "fs";
 import { registerRedPointsRoutes } from "./redPoints"; 
 import { processImage } from "./processImage";
+import { createClient } from "@supabase/supabase-js";
+import "dotenv/config";
+import { db } from "./db";  // ✅ 匯入 db
+import { parkingSubSpots } from "../shared/schema"; // 匯入 schema
+import { eq } from "drizzle-orm";
 
 /* --------------------------------------------------
  *  Multer – local uploads (images / videos up to 500 MB)
@@ -480,12 +485,44 @@ app.post("/api/uploads", requireAuth, upload.single("file"), async (req, res) =>
     const validatedData = insertImageUploadSchema.parse(uploadData);
     const upload_record = await storage.createImageUpload(validatedData);
 
-    // ✅ 引用 processImage，自動觸發融合
+    //  引用 processImage，自動觸發融合
     processImage(location, safeFilename).catch((err) => {
       console.error("融合處理異常:", err);
     });
 
-    res.status(201).json(upload_record);
+    // ====== 上傳成功自動加 50 分 ======
+    await supabase.from("points_history").insert({
+      user_id: userId,
+      type: "upload",
+      change: 50,
+      description: "上傳照片"
+    });
+
+    // 取得目前積分
+    const { data: currentUser } = await supabase
+      .from("users")
+      .select("points")
+      .eq("id", userId)
+      .single();
+
+    if (currentUser) {
+      const newPoints = currentUser.points + 50;
+
+      await supabase
+        .from("users")
+        .update({ points: newPoints })
+        .eq("id", userId);
+
+      // 回傳包含更新後積分
+      return res.status(201).json({
+        ...upload_record,
+        updatedPoints: newPoints,
+      });
+    } else {
+      // 回傳原本紀錄（萬一沒找到 user）
+      return res.status(201).json(upload_record);
+    }
+
   } catch (error) {
     if (error instanceof z.ZodError) {
       return res.status(400).json({ message: "Invalid data", errors: error.errors });
@@ -637,6 +674,27 @@ app.post("/api/uploads", requireAuth, upload.single("file"), async (req, res) =>
       res.status(500).json({ message: "Failed to reply to message" });
     }
   });
+
+  app.get("/api/parking-sub-spots", async (req, res) => {
+  const spotId = Number(req.query.spotId);
+  console.log("查詢子車格 spotId =", spotId); 
+  if (!spotId) {
+    return res.status(400).json({ message: "缺少 spotId" });
+  }
+
+  try {
+    const subSpots = await db
+      .select()
+      .from(parkingSubSpots)
+      .where(eq(parkingSubSpots.spotId, spotId));
+
+    console.log("查到子車格數量:", subSpots.length);
+    res.json(subSpots);
+  } catch (err) {
+    console.error("查詢子停車格失敗:", err);
+    res.status(500).json({ message: "查詢失敗", error: String(err) });
+  }
+});
 
   app.get("/admin/api/parking-spots", requireAdmin, async (req, res) => {
     try {
@@ -854,6 +912,90 @@ app.post("/api/uploads", requireAuth, upload.single("file"), async (req, res) =>
       console.error("Error replying with notification:", error);
       res.status(500).json({ message: "Failed to reply with notification" });
     }
+  });
+
+  // 從環境變數讀取 Supabase 連線資訊
+  const SUPABASE_URL = process.env.SUPABASE_URL!;
+  const SUPABASE_KEY = process.env.SUPABASE_KEY!;
+
+  // 建立 supabase client（共用）
+  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  // 積分相關 API 路由
+  app.get("/api/points", requireAuth, async (req, res) => {
+    const userId = req.user?.id;
+    if (!userId) return res.status(401).json({ message: "未登入" });
+
+    try {
+      const { data: user } = await supabase
+        .from("users")
+        .select("points")
+        .eq("id", userId)
+        .single();
+
+      const { data: history } = await supabase
+        .from("points_history")
+        .select("*")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false });
+
+      return res.json({
+        currentPoints: user?.points ?? 0,
+        history: history ?? [],
+      });
+    } catch (error) {
+      console.error("取得積分失敗：", error);
+      res.status(500).json({ message: "取得積分失敗" });
+    }
+  });
+
+
+  app.post("/api/points/use", requireAuth, async (req, res) => {
+    const userId = req.user?.id;
+    const { action } = req.body; // 前端傳來：map / navigation / streetview
+
+    // 定義每個動作扣幾分、說明
+    const actionMap: Record<string, { cost: number; description: string }> = {
+      map: { cost: 10, description: "點擊地圖使用功能" },
+      navigation: { cost: 30, description: "使用導航功能" },
+      streetview: { cost: 50, description: "使用街景功能" },
+    };
+
+    if (!action || !actionMap[action]) {
+      return res.status(400).json({ message: "未知的動作類型" });
+    }
+
+    const { cost, description } = actionMap[action];
+
+    const { data: user, error } = await supabase
+      .from("users")
+      .select("points")
+      .eq("id", userId)
+      .single();
+
+    if (error || !user) return res.status(500).json({ message: "查詢失敗" });
+
+    if (user.points < cost) {
+      return res.status(400).json({ message: "積分不足，無法使用功能" });
+    }
+
+    const newPoints = user.points - cost;
+
+    await supabase
+      .from("users")
+      .update({ points: newPoints })
+      .eq("id", userId);
+
+    await supabase.from("points_history").insert([
+      {
+        user_id: userId,
+        type: "use",
+        change: -cost,
+        description,
+      },
+    ]);
+
+    res.json({ success: true, updatedPoints: newPoints });
   });
 
   const httpServer = createServer(app);
