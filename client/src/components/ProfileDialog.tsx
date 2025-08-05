@@ -40,6 +40,19 @@ interface ProfileDialogProps {
   children: React.ReactNode;
 }
 
+interface PointHistoryEntry {
+  id: string;
+  type: "upload" | "use";
+  change: number;
+  description: string;
+}
+
+interface PointsData {
+  currentPoints: number;
+  history: PointHistoryEntry[];
+}
+
+
 export default function ProfileDialog({ children }: ProfileDialogProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -58,6 +71,11 @@ export default function ProfileDialog({ children }: ProfileDialogProps) {
   // 獲取通知
   const { data: notifications = [] } = useQuery<NotificationWithUser[]>({
     queryKey: ["/api/notifications"],
+  });
+
+  // 取得用戶積分
+  const { data: points, refetch } = useQuery<PointsData>({
+    queryKey: ["/api/points"],
   });
 
   // 密碼修改mutation
@@ -138,6 +156,48 @@ const markAllAsReadMutation = useMutation({
         
         <ScrollArea className="max-h-[70vh] pr-4">
           <div className="space-y-6">
+
+            {/* 積分區塊 */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Settings className="h-5 w-5" />
+                  積分資訊
+                </CardTitle>
+                <CardDescription>
+                  查看您目前的積分狀態與最近活動
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="text-lg font-semibold">
+                  剩餘積分：{points?.currentPoints ?? "載入中..."} 點
+                </div>
+                <div className="space-y-2 max-h-8 overflow-y-auto text-sm">
+                  {Array.isArray(points?.history) && points.history.length > 0 ? (
+                    points.history.map((entry: any, index: number) => (
+                      <div key={entry.id} className="flex justify-between items-center border-b pb-1">
+                        <span>
+                          {index === 0 && "最新一筆異動："}
+                          {entry.type === "upload" && "上傳圖片"}
+                          {entry.type === "use" && (
+                            entry.description === "點擊地圖使用功能" ? "使用地圖功能" :
+                            entry.description === "使用導航功能" ? "使用導航功能" :
+                            entry.description === "使用街景功能" ? "使用街景功能" :
+                            "使用其他功能"
+                          )}
+                        </span>
+                        <span className={`font-medium ${entry.change >= 0 ? "text-green-600" : "text-red-600"}`}>
+                          {entry.change > 0 ? `+${entry.change}` : entry.change} 點
+                        </span>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-muted-foreground">暫無紀錄</p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
             {/* 通知區域 */}
             <Card>
               <CardHeader>

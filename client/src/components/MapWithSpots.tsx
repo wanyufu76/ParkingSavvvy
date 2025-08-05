@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { io } from "socket.io-client";
 import type { ParkingSpot } from "@shared/schema";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 
 const socket = io();
 
@@ -359,6 +360,29 @@ export default function MapWithSpots({ onSpotClick }: Props) {
         map.setZoom(21);
         map.setCenter(mapping.point);
 
+        try {
+          const res = await fetch("/api/points/use", {
+            method: "POST",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ action: "map" }), // ✅ 改這行：地圖圖示扣分
+          });
+
+          const data = await res.json();
+
+          if (res.ok) {
+            console.log(`✅ 已扣 100 積分，剩餘 ${data.updatedPoints}`);
+            queryClient.invalidateQueries({ queryKey: ["/api/points"] });
+          } else {
+            alert(data.message || "❌ 扣分失敗，請稍後再試");
+          }
+        } catch (err) {
+          console.error("❌ 扣分失敗:", err);
+          alert("系統錯誤，請稍後再試");
+        }
+
         const subSpots: SubSpot[] = [];
 
         // 畫格子框與 label
@@ -425,7 +449,7 @@ export default function MapWithSpots({ onSpotClick }: Props) {
               map,
               icon: {
                 path: g.maps.SymbolPath.CIRCLE,
-                scale: 7,               // 半徑 (px) ─ 依需求微調
+                scale: 7.5,               // 半徑 (px) ─ 依需求微調
                 fillColor: "red",
                 fillOpacity: 1,
 
