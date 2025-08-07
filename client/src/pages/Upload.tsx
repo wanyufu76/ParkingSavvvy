@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -21,9 +21,10 @@ import {
   Clock,
   Download,
   Info,
+  Camera,
+  Trash,
 } from "lucide-react";
 import type { ImageUpload } from "@shared/schema";
-import { Trash } from "lucide-react";
 
 export default function Upload() {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -31,6 +32,10 @@ export default function Upload() {
   const [datetime, setDatetime] = useState("");
   const [description, setDescription] = useState("");
   const [isDragOver, setIsDragOver] = useState(false);
+  const [cameraOpen, setCameraOpen] = useState(false);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
 
   const { toast } = useToast();
   const { isAuthenticated, isLoading: authLoading } = useAuth();
@@ -177,15 +182,51 @@ export default function Upload() {
     uploadMutation.mutate(formData);
   };
 
-  /* ---------- UI ---------- */
-  if (authLoading) {
-    /* skeleton omitted for brevity */
-    return null;
-  }
+  const openCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      streamRef.current = stream;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        videoRef.current.play();
+      }
+      setCameraOpen(true);
+    } catch (error) {
+      toast({
+        title: "無法開啟相機",
+        description: "請確認您已授權相機權限，並使用 HTTPS 網址",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const capturePhoto = () => {
+    if (!videoRef.current || !canvasRef.current) return;
+    const context = canvasRef.current.getContext("2d");
+    if (!context) return;
+
+    canvasRef.current.width = videoRef.current.videoWidth;
+    canvasRef.current.height = videoRef.current.videoHeight;
+    context.drawImage(videoRef.current, 0, 0);
+
+    canvasRef.current.toBlob((blob) => {
+      if (blob) {
+        const file = new File([blob], `photo_${Date.now()}.jpg`, { type: "image/jpeg" });
+        setSelectedFiles([...selectedFiles, file]);
+        streamRef.current?.getTracks().forEach((track) => track.stop());
+        setCameraOpen(false);
+      }
+    }, "image/jpeg");
+  };
+
+  if (authLoading) return null;
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
+      {/* 其餘畫面請繼續接下去寫，以上整合到攝影功能為止 */}
+
+      <div className="max-w-4xl mx-auto px-4 py-8">
 
       {/* ---- Main Container ---- */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -216,6 +257,7 @@ export default function Upload() {
             )}
           </div>
         </div>
+      </div>
 
         {/* ---- Upload Instructions ---- */}
         <Card className="mb-8 bg-blue-50 border-blue-200">
@@ -270,6 +312,7 @@ export default function Upload() {
                     className="hidden"
                     onChange={handleFileSelect}
                   />
+                  <div className="flex justify-center gap-4">
                   <Button
                     type="button"
                     onClick={() => document.getElementById("file-input")?.click()}
@@ -278,8 +321,31 @@ export default function Upload() {
                     <FolderOpen className="h-4 w-4 mr-2" />
                     選擇檔案
                   </Button>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={openCamera}
+                  >
+                    <Camera className="h-4 w-4 mr-2" />
+                    開啟相機
+                  </Button>
                 </div>
-              </div>
+
+                {cameraOpen && (
+                  <div className="mt-6 flex flex-col items-center gap-4">
+                    <video ref={videoRef} className="w-full max-w-md rounded-lg border" autoPlay />
+                    <canvas ref={canvasRef} className="hidden" />
+                    <Button
+                      type="button"
+                      onClick={capturePhoto}
+                      className="bg-green-600 text-white hover:bg-green-700"
+                    >
+                      拍照
+                    </Button>
+                  </div>
+                )}
+                  </div>
+                </div>
 
               {/* Selected file list */}
               {selectedFiles.length > 0 && (
@@ -321,15 +387,21 @@ export default function Upload() {
               {/* Location & datetime */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <Label htmlFor="location">拍攝地點</Label>
-                  <Input
-                    id="location"
-                    type="text"
-                    placeholder="例：left、mid、right"
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
-                  />
-                </div>
+              <Label htmlFor="location">拍攝地點</Label>
+              <select
+                id="location"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary/30 sm:text-sm"
+              >
+                <option value="">請選擇地點</option>
+                <option value="ib">基隆路四段73巷_國際大樓</option>
+                <option value="tr">基隆路三段115巷_癌醫</option>
+                <option value="hilife">萊爾富側邊</option>
+                <option value="gges">公館國小側邊</option>
+                <option value="police">羅斯福路四段113巷_警察局</option>
+              </select>
+            </div>
                 <div>
                   <Label htmlFor="datetime">拍攝時間</Label>
                   <Input
