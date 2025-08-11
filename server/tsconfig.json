@@ -10,18 +10,16 @@
 //   }
 // }
 {
-  "extends": "../tsconfig.base.json",
-  "include": [
-    "./**/*",
-    "../shared/**/*",
-    "../vite.config.ts"
-  ],
-  "exclude": ["node_modules", "dist", "build", "**/*.test.ts"],
   "compilerOptions": {
-    "rootDir": "../",
-    "outDir": "../dist/server",
-    "noEmit": false,
-    "types": ["node"]
-  }
+    "outDir": "../dist/server",  // ← 加這行！將 server 輸出到 dist/server
+    "module": "CommonJS",
+    "target": "ES2020",
+    "esModuleInterop": true,
+    "moduleResolution": "Node",
+    "strict": true,
+    "skipLibCheck": true
+  },
+  "include": ["."],
+  "exclude": ["node_modules"]
 }
 

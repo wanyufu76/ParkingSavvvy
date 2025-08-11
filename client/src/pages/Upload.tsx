@@ -177,22 +177,34 @@ export default function Upload() {
   };
 
   const openCamera = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      streamRef.current = stream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        videoRef.current.play();
-      }
-      setCameraOpen(true);
-    } catch (error) {
-      toast({
-        title: "無法開啟相機",
-        description: "請確認您已授權相機權限，並使用 HTTPS 網址",
-        variant: "destructive",
-      });
+  console.log("openCamera called");
+
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    console.log("取得相機成功");
+    streamRef.current = stream;
+    if (videoRef.current) {
+      videoRef.current.srcObject = stream;
+      videoRef.current.play();
     }
-  };
+    setCameraOpen(true);
+  } catch (error: any) {
+    console.error("Camera error", error);
+
+    let message = "請確認您已授權相機權限，並使用 HTTPS 或 localhost";
+    if (error.name === "NotAllowedError") {
+      message = "您拒絕了相機權限，請至瀏覽器設定中重新啟用";
+    } else if (error.name === "NotFoundError") {
+      message = "找不到相機裝置，請確認設備具備鏡頭";
+    }
+
+    toast({
+      title: "無法開啟相機",
+      description: message,
+      variant: "destructive",
+    });
+  }
+};
 
   const capturePhoto = () => {
     if (!videoRef.current || !canvasRef.current) return;
