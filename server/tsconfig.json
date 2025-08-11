@@ -11,16 +11,17 @@
 // }
 {
   "extends": "../tsconfig.base.json",
-  "include": ["./**/*", "../shared/**/*"],
+  "include": [
+    "./**/*",
+    "../shared/**/*",
+    "../vite.config.ts"
+  ],
   "exclude": ["node_modules", "dist", "build", "**/*.test.ts"],
   "compilerOptions": {
-    "rootDir": ".",                // ✅ rootDir 改成 . 就好（也就是 server/）
+    "rootDir": "../",
     "outDir": "../dist/server",
     "noEmit": false,
-    "types": ["node"],
-    "baseUrl": ".",                // ✅ 保證 @shared 可解
-    "paths": {
-      "@shared/*": ["../shared/*"]
-    }
+    "types": ["node"]
   }
 }
+
