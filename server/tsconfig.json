@@ -14,16 +14,13 @@
   "include": ["./**/*", "../shared/**/*"],
   "exclude": ["node_modules", "dist", "build", "**/*.test.ts"],
   "compilerOptions": {
-    "rootDir": "./",                        // ✅ rootDir 改為 server 內部本身
-    "outDir": "../dist/server",             // ✅ 編譯輸出位置
-    "noEmit": false,                        // ✅ 需要輸出 JS，不能是 true
-    "module": "esnext",                     // ✅ 因為你使用的是 ESM 語法（import/export）
-    "moduleResolution": "node",            // ✅ 確保能解析 node 模組
-    "target": "esnext",                     // ✅ 輸出現代語法（跟 node 版本一致）
-    "esModuleInterop": true,                // ✅ 允許 commonjs 模組互通
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "types": ["node"]
+    "rootDir": ".",                // ✅ rootDir 改成 . 就好（也就是 server/）
+    "outDir": "../dist/server",
+    "noEmit": false,
+    "types": ["node"],
+    "baseUrl": ".",                // ✅ 保證 @shared 可解
+    "paths": {
+      "@shared/*": ["../shared/*"]
+    }
   }
 }
-
