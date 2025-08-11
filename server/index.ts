@@ -57,3 +57,8 @@ app.use(express.static("dist"));
     console.log(` HTTP + Socket.IO running on http://localhost:${PORT}`),
   );
 })();
+
+// const PORT = 5000;手機測試
+// httpServer.listen(PORT, '0.0.0.0', () => {
+//   console.log(`Server running on http://localhost:${PORT}`);
+// });
