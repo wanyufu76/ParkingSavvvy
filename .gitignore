@@ -8,7 +8,9 @@ build/
 .env
 .env.*        
 uploads/
+downloads/
 # migrations/   #若不想追蹤可保留
 *.log
 .vscode/
 Thumbs.db
+
