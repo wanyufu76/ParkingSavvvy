@@ -10,16 +10,14 @@
 //   }
 // }
 {
+  "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "../dist/server",  // ← 加這行！將 server 輸出到 dist/server
-    "module": "CommonJS",
-    "target": "ES2020",
-    "esModuleInterop": true,
-    "moduleResolution": "Node",
-    "strict": true,
-    "skipLibCheck": true
+    "rootDir": "../",                     // ✅ 要能包含 shared/
+    "outDir": "../dist/server",
+    "noEmit": false,
+    "types": ["node"]
   },
-  "include": ["."],
-  "exclude": ["node_modules"]
+  "include": ["**/*", "../shared/**/*"],
+  "exclude": ["node_modules", "dist", "**/*.test.ts"]
 }
 

@@ -7,9 +7,9 @@
   "dev": "cross-env NODE_ENV=development tsx server/index.ts",
   "build": "vite build && tsc -p server/tsconfig.json",
   "start": "node dist/server/index.js",
-  "check": "tsc",
+  "check": "tsc --noEmit",
   "db:push": "drizzle-kit push"
-  },
+},
   "dependencies": {
     "@babel/preset-typescript": "^7.27.1",
     "@hookform/resolvers": "^3.10.0",
