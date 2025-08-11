@@ -47,16 +47,16 @@ const { data: subSpots = [] } = useQuery({
         body: JSON.stringify({ action }),
       });
 
+      if (!res.ok) return false; // 積分不足或其他錯誤
       const data = await res.json();
-      if (res.ok) {
-        console.log(`✅ 已扣分成功（${action}），剩餘 ${data.updatedPoints}`);
+      if (data.success === true) {
         queryClient.invalidateQueries({ queryKey: ["/api/points"] });
-      } else {
-        alert(data.message || "❌ 扣分失敗，請稍後再試");
+        return true;
       }
-    } catch (err) {
-      console.error("❌ 扣分失敗:", err);
-      alert("系統錯誤，請稍後再試");
+
+      return false;
+    } catch {
+      return false;
     }
   };
 
@@ -65,10 +65,21 @@ const { data: subSpots = [] } = useQuery({
   const lat = parseFloat(spot.latitude);
   const lng = parseFloat(spot.longitude);
 
-  const handleOpenImage = (id: string, location: string) => {
+  const handleOpenImage = async (id: string, location: string) => {
     const processedUrl = `/processed_images/${id}_output.jpg`;
     const baseUrl = `/base_images/base_${id}.jpg`;
 
+    // 新增：先檢查 processed_images 是否有檔案
+    try {
+      const res = await fetch(processedUrl, { method: "HEAD" });
+      if (res.ok) {
+        window.open(processedUrl, "_blank");
+        return;
+      }
+    } catch {
+      // 忽略錯誤，走原本的判斷
+    }
+    
     const useProcessed = uploadedSpots.includes(location);
     const imageUrl = useProcessed ? processedUrl : baseUrl;
     window.open(imageUrl, "_blank");
@@ -98,12 +109,19 @@ const { data: subSpots = [] } = useQuery({
       <div className="grid gap-2">
         <Button
           className="w-full"
-          onClick={() => {
-            handlePointUsage("navigation");
-            window.open(
-              `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`,
-              "_blank"
-            );
+          onClick={async () => {
+            // 先向後端請求扣點
+            const ok = await handlePointUsage("navigation");
+
+            // 如果扣點成功才開導航
+            if (ok) {
+              window.open(
+                `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`,
+                "_blank"
+              );
+            } else {
+              alert("積分不足，無法使用導航功能");
+            }
           }}
         >
           <NavigationIcon className="h-4 w-4 mr-1" />
@@ -117,9 +135,13 @@ const { data: subSpots = [] } = useQuery({
           key={ps.id}
           variant="outline"
           className="w-full"
-          onClick={() => {
-            handlePointUsage("streetview");
-            handleOpenImage(ps.label, ps.label); // ps.label 就是 A01, B02...
+          onClick={async () => {
+            const ok = await handlePointUsage("streetview");
+            if (ok) {
+              handleOpenImage(ps.label, ps.label); // ps.label 就是 A01, B02...
+            } else {
+              alert("積分不足，無法查看街景");
+            }
           }}
         >
           查看街景：{ps.label}

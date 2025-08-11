@@ -1,59 +1,89 @@
-import cv2
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
 import numpy as np
+import cv2
 import os
+from upload_base_config import upload_config  # ✅ 引用你原本的上傳函式
 
-# ========== 載入圖像 ==========
-photo_path = r"C:\Users\admin\Desktop\Ting\mark\right.jpg"  
-img = cv2.imread(photo_path)
-clone = img.copy()
+def mark_image(photo_path, output_dir="base_config"):
+    os.makedirs(output_dir, exist_ok=True)
+    base_img_path = os.path.join(output_dir, "base_image.jpg")
+    H_save_path = os.path.join(output_dir, "H_base.npy")
+    src_pts_path = os.path.join(output_dir, "src_pts.npy")
 
-# ========== 儲存路徑 ==========
-os.makedirs("base_config", exist_ok=True)
-base_img_path = os.path.join("base_config", "base_image.jpg")
-H_save_path = os.path.join("base_config", "H_base.npy")
-src_pts_path = os.path.join("base_config", "src_pts.npy")  
+    img = mpimg.imread(photo_path)
+    fig, ax = plt.subplots()
+    ax.imshow(img)
+    ax.set_title("左鍵順時針標 4 點，右鍵刪除最後一點，Enter 完成")
+    points = []
+    order_text = ["左上", "右上", "右下", "左下"]
 
-# ========== 點選四點 ==========
-points = []
+    def onclick(event):
+        nonlocal points
+        if event.xdata is None or event.ydata is None:
+            return
+        if event.button == 1 and len(points) < 4:  # 左鍵
+            points.append((event.xdata, event.ydata))
+            ax.plot(event.xdata, event.ydata, 'ro')
+            ax.text(event.xdata+10, event.ydata-10,
+                    f"{len(points)}({order_text[len(points)-1]})",
+                    color='red', fontsize=10)
+            fig.canvas.draw()
+        elif event.button == 3 and points:  # 右鍵刪掉最後一個
+            points.pop()
+            ax.clear()
+            ax.imshow(img)
+            for idx, (px, py) in enumerate(points):
+                ax.plot(px, py, 'ro')
+                ax.text(px+10, py-10,
+                        f"{idx+1}({order_text[idx]})",
+                        color='red', fontsize=10)
+            fig.canvas.draw()
 
-print("📌 請依照順時針依序點選四個基準點（例如停車格邊角或場景中固定點）")
-cv2.namedWindow("Select Points")
+    fig.canvas.mpl_connect('button_press_event', onclick)
+    print(f"📌 標記：{os.path.basename(photo_path)}（左鍵標點 / 右鍵刪除 / Enter 完成）")
+    plt.show(block=True)
 
-def mouse_callback(event, x, y, flags, param):
-    global points, img
-    if event == cv2.EVENT_LBUTTONDOWN and len(points) < 4:
-        points.append((x, y))
-        cv2.circle(img, (x, y), 6, (0, 0, 255), -1)
-        cv2.putText(img, str(len(points)), (x + 10, y - 10),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+    if len(points) != 4:
+        print("⚠️ 沒有標滿 4 點，跳過這張")
+        return
 
-cv2.setMouseCallback("Select Points", mouse_callback)
+    # 轉成 float32
+    src_pts = np.array(points, dtype=np.float32)
+    dst_pts = np.array([[0,0],[1,0],[1,1],[0,1]], dtype=np.float32)
 
-while True:
-    cv2.imshow("Select Points", img)
-    key = cv2.waitKey(1) & 0xFF
-    if key == 13 and len(points) == 4:
-        break
-    elif key == 27:  # ESC 重設
-        img = clone.copy()
-        points = []
+    # 計算 Homography
+    H, _ = cv2.findHomography(src_pts, dst_pts)
+    H /= H[2, 2]
 
-cv2.destroyAllWindows()
+    # 儲存檔案
+    cv2.imwrite(base_img_path, cv2.cvtColor((img*255).astype(np.uint8), cv2.COLOR_RGB2BGR))
+    np.save(H_save_path, H)
+    np.save(src_pts_path, src_pts)
+    print("✅ 已儲存 base_image.jpg、H_base.npy、src_pts.npy")
 
-# ========== 計算與儲存 Homography ==========
-src_pts = np.array(points, dtype=np.float32)
-dst_pts = np.array([
-    [0, 0],
-    [1, 0],
-    [1, 1],
-    [0, 1]
-], dtype=np.float32)
+    # 交給舊版函式處理上傳
+    area_id = input("請輸入此底圖的區域名稱（area_id，例如 A01 或 right）：")
+    upload_config(area_id)
 
-H, _ = cv2.findHomography(src_pts, dst_pts)
+if __name__ == "__main__":
+    path = input("請輸入單張圖片或資料夾路徑：").strip('"')
 
-# ========== 儲存 ==========
-cv2.imwrite(base_img_path, clone)
-np.save(H_save_path, H)
-np.save(src_pts_path, src_pts)
+    if os.path.isfile(path):
+        # 單張模式
+        mark_image(path)
 
-print("✅ 已儲存 base_image.jpg、H_base.npy、src_pts.npy")
+    elif os.path.isdir(path):
+        # 批次模式
+        image_files = [f for f in os.listdir(path) if f.lower().endswith((".jpg",".jpeg",".png"))]
+        if not image_files:
+            print("⚠️ 資料夾中沒有可用的圖片")
+        else:
+            print(f"🔹 找到 {len(image_files)} 張圖片，將依序開啟標記並上傳")
+            for idx, filename in enumerate(sorted(image_files)):
+                print(f"\n=== [{idx+1}/{len(image_files)}] 開始標記 {filename} ===")
+                photo_path = os.path.join(path, filename)
+                mark_image(photo_path)
+            print("\n🎉 批次標點與上傳完成！")
+    else:
+        print("❌ 輸入的路徑不存在，請確認後重新執行")

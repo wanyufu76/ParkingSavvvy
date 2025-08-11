@@ -1,29 +1,63 @@
-"""
-偵測機車與車牌 ➜ 配對 ➜ Homography 投影到【底圖像素座標】
-輸出 <影像檔名>_result.json，供 auto_process.py 上傳
-"""
 import cv2, json, os, sys, numpy as np
+import base64
 from scipy.optimize import linear_sum_assignment
+import io
 from ultralytics import YOLO
-from group_configs import group_latlng_map
+from supabase import create_client
 
-# 如果你的 H 目標點是在 (-1, -1) ~ (+1, +1) ，請設 True ; 若是 (0,0)-(1,1) 請設 False
+# Supabase 連線
+SUPABASE_URL = "https://polqjhuklxclnvgpjckf.supabase.co"
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBvbHFqaHVrbHhjbG52Z3BqY2tmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MjI4MTA5NywiZXhwIjoyMDY3ODU3MDk3fQ.tA_l_KmEsm3YlnPfohlwaYiOG3fnTrbZRlJGUCpkWnk"
+supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+
 USE_RANGE_MINUS1_TO_1 = True
 
-# ------------ 主函式 ------------
-def run_detection_and_draw(img_path: str, base_cfg_dir: str, ocr_json_path: str):
+def decode_npy_b64(b64_str):
+    """將 base64 還原為 numpy array"""
+    raw = base64.b64decode(b64_str)
+    return np.load(io.BytesIO(raw))
 
-    # 1. 讀 Homography & 歸一化
-    H = np.load(os.path.join(base_cfg_dir, "H_base.npy")).astype(float)
-    if H[2, 2] == 0:
+def get_base_config(location):
+    """從 base_configs 撈對應的 Homography 與底圖資訊"""
+    res = supabase.table("base_configs").select("*").eq("area_id", location).limit(1).execute()
+    if not res.data:
+        raise ValueError(f"找不到 {location} 對應的 base_config")
+    
+    cfg = res.data[0]
+
+    # decode H_base
+    H_base = np.load(io.BytesIO(base64.b64decode(cfg["h_base_b64"]))).astype(float)
+    if H_base[2, 2] == 0:
         raise ValueError("H[2,2] = 0，Homography 無效")
-    H /= H[2, 2]
+    H_base /= H_base[2, 2]
+
+    # 取底圖大小
+    W = cfg.get("img_width")
+    H_img = cfg.get("img_height")
+    if not W or not H_img:
+        # 如果資料庫沒存就讀實際圖
+        base_img_b64 = cfg.get("base_image_b64")
+        if base_img_b64:
+            img_arr = np.frombuffer(base64.b64decode(base_img_b64), dtype=np.uint8)
+            img = cv2.imdecode(img_arr, cv2.IMREAD_COLOR)
+            H_img, W = img.shape[:2]
+        else:
+            raise ValueError(f"{location} 沒有 img_width/img_height，且無法讀底圖")
+
+    return H_base, W, H_img
+
+def run_detection_and_draw(img_path: str, base_cfg_dir: str, ocr_json_path: str):
+    # location
+    loc_tag = os.path.basename(base_cfg_dir).replace("base_config_", "")
+
+    # 1. 從 DB 取 H 與底圖大小
+    H, W, H_img = get_base_config(loc_tag)
 
     # 2. YOLO 偵測
     img = cv2.imread(img_path)
     model_motor = YOLO("yolov8m.pt")
     model_plate = YOLO(r"C:\Users\CGM\Desktop\best_weight\plate.pt")
-    mot, plate = model_motor(img,  verbose=False)[0], model_plate(img, verbose=False)[0]
+    mot, plate = model_motor(img, verbose=False)[0], model_plate(img, verbose=False)[0]
 
     m_boxes = [b.tolist() for b,c in zip(mot.boxes.xyxy.cpu(), mot.boxes.cls.cpu()) if int(c)==3]
     p_boxes = plate.boxes.xyxy.cpu().tolist()
@@ -42,16 +76,10 @@ def run_detection_and_draw(img_path: str, base_cfg_dir: str, ocr_json_path: str)
         print("⚠️ 無配對成功機車")
         return
 
-    # 4. 根據 location 取底圖尺寸
-    loc_tag = os.path.basename(base_cfg_dir).replace("base_config_", "")
-    cfg = next(c for c in group_latlng_map.values() if loc_tag in c["area_names"])
-    W, H_img = cfg["img_width"], cfg["img_height"]
-
-    # 5. 投影並換算為像素
-    # xn, yn 範圍 -1~+1，中央 (0,0)
+    # 4. 投影 + 像素換算
     def norm_to_px(xn: float, yn: float):
-        x = (xn + 1) / 2 * W           # -1 → 0 , +1 → W
-        y = (1 - yn) / 2 * H_img       # +1 → 0 , -1 → H_img
+        x = (xn + 1) / 2 * W           # -1 → 0 , +1 → W
+        y = (1 - yn) / 2 * H_img       # +1 → 0 , -1 → H_img
         return float(x), float(y)
 
     px_pos = []
@@ -63,10 +91,10 @@ def run_detection_and_draw(img_path: str, base_cfg_dir: str, ocr_json_path: str)
         x_px, y_px = norm_to_px(xn, yn)
         px_pos.append((x_px, y_px))
 
-    # 6. 讀 OCR
+    # 5. 讀 OCR
     ocr_data = json.load(open(ocr_json_path, encoding="utf-8"))
 
-    # 7. 組 result list
+    # 6. 組 result list
     results = []
     for idx, (x_px, y_px) in enumerate(px_pos):
         cx, cy = m_cent[matches[idx][0]]
@@ -88,14 +116,14 @@ def run_detection_and_draw(img_path: str, base_cfg_dir: str, ocr_json_path: str)
             )
         )
 
-    # 8. 輸出 JSON
+    # 7. 輸出 JSON
     out_path = img_path + "_result.json"
     json.dump(results, open(out_path, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
     print(f"✅ 產生 {out_path}  ({len(results)} 筆)")
 
 # ------------ CLI ------------
 if __name__ == "__main__":
-    if len(sys.argv) != 4:
+    if len(sys.argv) != 3 and len(sys.argv) != 4:
         print("用法: python based_mark.py <image> <base_config_dir> <ocr_json>")
         sys.exit(1)
     run_detection_and_draw(*sys.argv[1:])

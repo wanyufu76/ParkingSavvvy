@@ -40,7 +40,6 @@ export default function Upload() {
   const { toast } = useToast();
   const { isAuthenticated, isLoading: authLoading } = useAuth();
 
-  /* ---------- auth redirect ---------- */
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
       toast({
@@ -54,7 +53,6 @@ export default function Upload() {
     }
   }, [isAuthenticated, authLoading, toast]);
 
-  /* ---------- queries ---------- */
   const uploadQueryKey = ["/api/uploads"];
   const { data: uploads = [], isLoading } = useQuery<ImageUpload[]>({
     queryKey: uploadQueryKey,
@@ -68,7 +66,6 @@ export default function Upload() {
     refetchOnWindowFocus: false,
   });
 
-  /* ---------- mutations ---------- */
   const uploadMutation = useMutation({
     mutationFn: async (formData: FormData) => {
       const response = await fetch("/api/uploads", {
@@ -121,7 +118,6 @@ export default function Upload() {
     },
   });
 
-  /* ---------- helpers ---------- */
   const resetForm = () => {
     setSelectedFiles([]);
     setLocation("");
@@ -139,7 +135,6 @@ export default function Upload() {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
-  /* ---------- drag / drop handlers ---------- */
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) =>
     setSelectedFiles(Array.from(e.target.files || []));
 
@@ -158,7 +153,6 @@ export default function Upload() {
     setIsDragOver(false);
   };
 
-  /* ---------- submit ---------- */
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (selectedFiles.length === 0) {

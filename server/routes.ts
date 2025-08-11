@@ -21,6 +21,7 @@ import "dotenv/config";
 import { db } from "./db";  // ✅ 匯入 db
 import { parkingSubSpots } from "../shared/schema"; // 匯入 schema
 import { eq } from "drizzle-orm";
+import { getParkingHints } from "./parkingHints"; 
 
 /* --------------------------------------------------
  *  Multer – local uploads (images / videos up to 500 MB)
@@ -90,6 +91,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   await createDefaultAdmin();
   /* --- 紅點路由：放在萬用 * 之前 --- */
   registerRedPointsRoutes(app);
+  app.get("/api/parking-hints", getParkingHints); 
 
   /* ---------- Google OAuth ---------- */
   app.get("/api/auth/google", (req, res) => {
@@ -486,9 +488,113 @@ app.post("/api/uploads", requireAuth, upload.single("file"), async (req, res) =>
     const upload_record = await storage.createImageUpload(validatedData);
 
     //  引用 processImage，自動觸發融合
-    processImage(location, safeFilename).catch((err) => {
-      console.error("融合處理異常:", err);
-    });
+    // processImage(location, safeFilename).catch((err) => {
+    //   console.error("融合處理異常:", err);
+    // });
+
+    // ===================== [NEW] 自動判斷區位 + 融合（ESM-safe, 絕對路徑） =====================
+    (async () => {
+      try {
+        const { spawn } = await import("node:child_process");
+        const { default: path } = await import("node:path");
+        const { default: fsSync } = await import("node:fs");
+        const { fileURLToPath } = await import("node:url");
+
+        // __dirname for ESM
+        const __filename = fileURLToPath(import.meta.url);
+        const __dirname = path.dirname(__filename);
+
+        // 專案根（server/ 的上一層）
+        const ROOT = path.resolve(__dirname, "..");
+
+        // 目錄/腳本（可用環境變數覆蓋）
+        const MARK_DIR = process.env.MARK_DIR || path.resolve(ROOT, "mark");                       // .../ParkSavvy/mark
+        const INFER_PATH = process.env.INFER_PATH || path.join(MARK_DIR, "infer_location.py");     // 絕對路徑
+        const PROCESSED_IMAGES_DIR = process.env.PROCESSED_IMAGES_DIR || path.resolve(ROOT, "processed_images");
+        const BASE_IMAGES_DIR = process.env.BASE_IMAGES_DIR || path.resolve(ROOT, "base_images");
+        const SIFT_SCRIPT = process.env.SIFT_SCRIPT || path.join(ROOT, "sift_v1.py");
+        const PYTHON = process.env.PYTHON || "python";
+
+        if (!fsSync.existsSync(PROCESSED_IMAGES_DIR)) {
+          fsSync.mkdirSync(PROCESSED_IMAGES_DIR, { recursive: true });
+        }
+
+        // 跑 python（不用 conda）
+        const runPython = (args: string[], extraEnv: NodeJS.ProcessEnv = {}) =>
+          new Promise<{ stdout: string; stderr: string; code: number }>((resolve, reject) => {
+            const env = { ...process.env, ...extraEnv };
+            const child = spawn(PYTHON, args, { env });
+            let stdout = "", stderr = "";
+            child.stdout.on("data", (d) => (stdout += d.toString()));
+            child.stderr.on("data", (d) => (stderr += d.toString()));
+            child.on("error", reject);
+            child.on("close", (code) => resolve({ stdout, stderr, code: code ?? -1 }));
+          });
+
+        // 1) 推論區位：用 importlib 直接載入 infer_location.py
+        async function inferArea(uploadAbsPath: string): Promise<string> {
+          const pySnippet = [
+  'import importlib.util',
+  `spec = importlib.util.spec_from_file_location("infer_location", r"${INFER_PATH}")`,
+  'mod = importlib.util.module_from_spec(spec)',
+  'spec.loader.exec_module(mod)',
+  `loc = mod.infer_location_clip(r"${uploadAbsPath}", processed_images_dir=r"${PROCESSED_IMAGES_DIR}")`,
+  'print("RESULT:", loc if loc else "")'
+].join('\n');
+
+
+          const { stdout, stderr, code: exitCode } = await runPython(["-c", pySnippet], {
+            PYTHONPATH: `${MARK_DIR}:${ROOT}`,
+            PYTHONIOENCODING: "utf-8",
+          });
+          if (exitCode !== 0) {
+            console.error("[inferArea] exit", exitCode, stderr);
+            throw new Error("區域推論執行失敗");
+          }
+          const line = stdout.split(/\r?\n/).reverse().find((l) => l.startsWith("RESULT:"));
+          const area = line ? line.replace("RESULT:", "").trim() : "";
+          if (!area) {
+            console.error("[inferArea] 解析不到區域，stdout:\n", stdout);
+            throw new Error("無法解析推論區域");
+          }
+          return area;
+        }
+
+        // 2) 選底圖：優先 processed_images/<區位>_output.jpg，否則 base_images/base_<區位>.jpg
+        function pickBase(area: string): string {
+          const processed = path.join(PROCESSED_IMAGES_DIR, `${area}_output.jpg`);
+          if (fsSync.existsSync(processed)) return processed;
+          const base = path.join(BASE_IMAGES_DIR, `base_${area}.jpg`);
+          if (fsSync.existsSync(base)) return base;
+          throw new Error(`找不到底圖：${processed} 或 ${base}`);
+        }
+
+        // 3) 融合：sift_v1.py base upload output
+        async function fuseWithSift(basePath: string, uploadPath: string, outPath: string) {
+          const { stdout, stderr, code: exitCode } = await runPython(
+            [SIFT_SCRIPT, basePath, uploadPath, outPath],
+            { PYTHONPATH: `${MARK_DIR}:${ROOT}` }
+          );
+          if (exitCode !== 0) {
+            console.error("[sift] stderr:", stderr);
+            throw new Error("sift 融合失敗");
+          }
+          if (stdout) console.log("[sift] stdout:", stdout);
+        }
+
+        // 取得這次上傳檔的絕對路徑（沿用你上方 rename 後的 newPath）
+        const uploadAbsPath = path.resolve(newPath);
+        const inferredArea = await inferArea(uploadAbsPath);
+        const basePath = pickBase(inferredArea);
+        const fusedPath = path.join(PROCESSED_IMAGES_DIR, `${inferredArea}_output.jpg`); // 覆蓋更新
+
+        await fuseWithSift(basePath, uploadAbsPath, fusedPath);
+        console.log(`[uploads] ✅ 推論區位=${inferredArea}，已輸出融合：${fusedPath}`);
+      } catch (e) {
+        console.error("[uploads][infer+fuse] 失敗：", e);
+      }
+    })();
+    // =================== [NEW] end ===================
 
     // ====== 上傳成功自動加 50 分 ======
     await supabase.from("points_history").insert({

@@ -2,7 +2,9 @@ import { useEffect, useRef } from "react";
 import { io } from "socket.io-client";
 import type { ParkingSpot } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import { getAvailabilityMap, buildGroupAvailability } from "../../../server/availability";
 
+// ↑ 依你檔案實際位置調整相對路徑，例如 ../ 或 ../../
 const socket = io();
 
 interface Props {
@@ -64,7 +66,7 @@ export default function MapWithSpots({ onSpotClick }: Props) {
   {
     spotName: "基隆路四段73巷路邊停車格A",
     point: { lat: 25.011824, lng: 121.540574 },
-    iconUrl: "https://cdn-icons-png.flaticon.com/512/608/608690.png",
+    iconUrl:"", //"https://cdn-icons-png.flaticon.com/512/608/608690.png",
     rects: [
       {
         name: "A01",
@@ -104,7 +106,7 @@ export default function MapWithSpots({ onSpotClick }: Props) {
   {
     spotName: "基隆路四段73巷路邊停車格B",
     point: { lat: 25.012143, lng: 121.540345 },
-    iconUrl: "https://cdn-icons-png.flaticon.com/512/608/608690.png",
+    iconUrl:"",// "https://cdn-icons-png.flaticon.com/512/608/608690.png",
     rects: [
       {
         name: "B01",
@@ -155,7 +157,7 @@ export default function MapWithSpots({ onSpotClick }: Props) {
   {
     spotName: "基隆路四段73巷路邊停車格C",
     point: { lat: 25.012775, lng: 121.539811 },
-    iconUrl: "https://cdn-icons-png.flaticon.com/512/608/608690.png",
+    iconUrl:"", // "https://cdn-icons-png.flaticon.com/512/608/608690.png",
     rects: [
       {
         name: "C01",
@@ -195,7 +197,7 @@ export default function MapWithSpots({ onSpotClick }: Props) {
   {
     spotName: "基隆路四段73巷路邊停車格D",
     point: { lat: 25.012847, lng: 121.539682 },
-    iconUrl: "https://cdn-icons-png.flaticon.com/512/608/608690.png",
+    iconUrl:"",// "https://cdn-icons-png.flaticon.com/512/608/608690.png",
     rects: [
       {
         name: "D01",
@@ -213,7 +215,7 @@ export default function MapWithSpots({ onSpotClick }: Props) {
   {
     spotName: "基隆路四段73巷路邊停車格E",
     point: { lat: 25.012450, lng: 121.540043 },
-    iconUrl: "https://cdn-icons-png.flaticon.com/512/608/608690.png",
+    iconUrl:"", // "https://cdn-icons-png.flaticon.com/512/608/608690.png",
     rects: [
       {
         name: "E01",
@@ -253,7 +255,7 @@ export default function MapWithSpots({ onSpotClick }: Props) {
   {
     spotName: "基隆路四段73巷路邊停車格F",
     point: { lat: 25.011992, lng: 121.540419 },
-    iconUrl: "https://cdn-icons-png.flaticon.com/512/608/608690.png",
+    iconUrl:"", // "https://cdn-icons-png.flaticon.com/512/608/608690.png",
     rects: [
       {
         name: "F01",
@@ -293,7 +295,7 @@ export default function MapWithSpots({ onSpotClick }: Props) {
   {
     spotName: "基隆路四段73巷路邊停車格G",     
     point: { lat: 25.011594, lng: 121.540730 }, 
-    iconUrl: "https://cdn-icons-png.flaticon.com/512/608/608690.png",
+    iconUrl:"", // "https://cdn-icons-png.flaticon.com/512/608/608690.png",
     rects: [
       {
         name: "G01",
@@ -311,7 +313,7 @@ export default function MapWithSpots({ onSpotClick }: Props) {
   {
     spotName: "基隆路四段73巷路邊停車格H",     
     point: { lat: 25.011488, lng: 121.540855 }, 
-    iconUrl: "https://cdn-icons-png.flaticon.com/512/608/608690.png",
+    iconUrl:"", // "https://cdn-icons-png.flaticon.com/512/608/608690.png",
     rects: [
       {
         name: "H01",
@@ -339,49 +341,63 @@ export default function MapWithSpots({ onSpotClick }: Props) {
   },
 ];
 
+  const availabilityById = await getAvailabilityMap();
+  const availabilityByGroup = buildGroupAvailability(availabilityById); // Map<"A","B",... → 聚合結果>
+
+  // 2) 畫 P 點前，取出這個 P 對應的大區 key（A/B/C...）
+  //   建議從第一個子格名稱推：A01 → A、B02 → B
   for (const mapping of boxMappings) {
     const matchedSpot = spots.find((s) => s.name === mapping.spotName);
+    const firstSub = mapping.rects?.[0]?.name ?? "";             // 例如 "A01"
+    const groupKey = firstSub.match(/^[A-Za-z]+/)?.[0] ?? "";     // 取 "A"
 
-    // ✅ 一開始就畫 P 點 marker
+    const group = availabilityByGroup.get(groupKey);              // 取聚合結果
+    const iconUrl = group
+      ? (group.state === "has_space"
+          ? "https://polqjhuklxclnvgpjckf.supabase.co/storage/v1/object/public/icons/parking.png"
+          : group.state === "no_space"
+          ? "https://polqjhuklxclnvgpjckf.supabase.co/storage/v1/object/public/icons/parking-2.png"
+          : "https://polqjhuklxclnvgpjckf.supabase.co/storage/v1/object/public/icons/parking-3.png")
+      : "https://polqjhuklxclnvgpjckf.supabase.co/storage/v1/object/public/icons/parking-3.png";
+
+    const title = group
+      ? `${groupKey} 區 | 空位: ${group.free_slots}/${group.capacity_est}`
+      : `${groupKey || mapping.spotName} | 狀態: 未知`;
+
     const marker = new g.maps.Marker({
       position: mapping.point,
       map,
-      title: mapping.spotName,
-      icon: {
-        url: mapping.iconUrl,
-        scaledSize: new g.maps.Size(36, 36),
-      },
+      title,
+      icon: { url: iconUrl, scaledSize: new g.maps.Size(36, 36) },
     });
     console.log(`🅿️ P 點 marker 建立: ${mapping.spotName}`);
 
     marker.addListener("click", async () => {
       if (!isZoomed) {
-        console.log("🔍 Zoom in 中...");
-        map.setZoom(21);
-        map.setCenter(mapping.point);
-
+        // 先嘗試扣分
         try {
           const res = await fetch("/api/points/use", {
             method: "POST",
             credentials: "include",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ action: "map" }), // ✅ 改這行：地圖圖示扣分
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: "map" }), // 地圖使用扣分
           });
 
           const data = await res.json();
 
-          if (res.ok) {
-            console.log(`✅ 已扣 100 積分，剩餘 ${data.updatedPoints}`);
-            queryClient.invalidateQueries({ queryKey: ["/api/points"] });
-          } else {
-            alert(data.message || "❌ 扣分失敗，請稍後再試");
-          }
-        } catch (err) {
-          console.error("❌ 扣分失敗:", err);
-          alert("系統錯誤，請稍後再試");
+          if (!(res.ok && data.success === true)) {
+          alert(data.message || "❌ 積分不足，無法使用地圖功能");
+          return; // ❌ 扣分失敗 → 不放大、不畫格子、不畫紅點
         }
+
+        console.log(`✅ 已扣 ${data.cost || 10} 積分，剩餘 ${data.updatedPoints}`);
+        queryClient.invalidateQueries({ queryKey: ["/api/points"] });
+
+        // 扣分成功才執行以下內容
+        console.log("🔍 Zoom in 中...");
+        map.setZoom(21);
+        map.setCenter(mapping.point);
+
 
         const subSpots: SubSpot[] = [];
 
@@ -477,6 +493,10 @@ export default function MapWithSpots({ onSpotClick }: Props) {
         }
 
         isZoomed = true;
+      } catch (err) {
+        console.error("❌ 扣分或地圖處理失敗:", err);
+        alert("系統錯誤，請稍後再試");
+      }
       } else {
         // zoom out 清除格子與紅點
         console.log("↩️ Zoom out 回原始地圖");
@@ -496,6 +516,7 @@ export default function MapWithSpots({ onSpotClick }: Props) {
     });
   }
 };
+
 
   return <div ref={mapRef} className="w-full h-full" />;
 }
