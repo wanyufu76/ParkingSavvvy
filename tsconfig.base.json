@@ -10,6 +10,11 @@
     "baseUrl": ".",                  // 基底路徑
     "outDir": "dist",                // 最終輸出
     "rootDir": ".",                  // 根目錄（讓 shared 被包含進來）
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "paths": {
+      "@/*": ["client/src/*"],
+      "@shared/*": ["shared/*"],
+      "@assets/*": ["attached_assets/*"]
+    }
   }
 }
