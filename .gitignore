@@ -9,6 +9,7 @@ build/
 .env.*        
 uploads/
 downloads/
+render.yaml
 # migrations/   #若不想追蹤可保留
 *.log
 .vscode/
