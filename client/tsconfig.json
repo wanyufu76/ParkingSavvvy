@@ -3,7 +3,7 @@
   "include": [
     "src/**/*",
     "../shared/**/*"
-  ],
+, "../server/availability.ts"  ],
   "exclude": [
     "node_modules",
     "dist",

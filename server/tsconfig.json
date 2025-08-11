@@ -1,6 +1,6 @@
 {
   "extends": "../tsconfig.base.json",
-  "include": ["./**/*", "../shared/**/*"],
+  "include": ["./**/*", "../shared/**/*", "../client/src/pages/availability.ts"],
   "exclude": ["node_modules", "dist", "build", "**/*.test.ts"],
   "compilerOptions": {
     "rootDir": "../",
