@@ -13,12 +13,16 @@
 {
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "rootDir": "../server",
-    "outDir": "../dist",
+    "rootDir": "../",              // ✅ 改成整個專案根目錄
+    "outDir": "../dist",           // ✅ 編譯到 dist 根目錄
     "module": "Node16",
     "moduleResolution": "node16",
     "target": "ES2022"
   },
-  "include": ["../server/**/*.ts", "../shared/**/*.ts"],
+  "include": [
+    "../server/**/*.ts",           
+    "../shared/**/*.ts",          
+    "../vite.config.ts"          
+  ],
   "exclude": ["node_modules", "dist", "**/*.test.ts"]
 }
