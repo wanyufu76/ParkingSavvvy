@@ -1,8 +1,14 @@
-const path = require("path");
-const react = require("@vitejs/plugin-react");
+// vite.config.js
+import path from "path";
+import { fileURLToPath } from "url";
+import react from "@vitejs/plugin-react";
+
+/** 模擬 __dirname */
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 /** @type {import('vite').UserConfig} */
-module.exports = {
+export default {
   plugins: [react()],
   resolve: {
     alias: {
