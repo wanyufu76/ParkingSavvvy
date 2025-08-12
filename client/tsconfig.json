@@ -1,32 +1,17 @@
 {
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "rootDir": "./src",                   // 只包含 client/src
     "outDir": "../dist/client",
+    "rootDir": "../",
     "noEmit": true,
-
     "lib": ["esnext", "dom", "dom.iterable"],
     "jsx": "react-jsx",
-
-    "baseUrl": "./src",                   // ⬅️ 為了讓 @/* 正確指向 src/
-    "paths": {
-      "@/*": ["*"],
-      "@shared/*": ["../../shared/*"]     // ⬅️ 正確導到根目錄的 shared
-    },
-
     "types": ["google.maps", "vite/client"]
   },
-  "include": [
-    "src/**/*",
-    "../../shared/**/*"                  // ⬅️ 多層 ../ 才會找對 shared
-  ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "build",
-    "**/*.test.ts"
-  ]
+  "include": ["client/src/**/*", "shared/**/*"],
+  "exclude": ["node_modules", "dist", "build", "**/*.test.ts"]
 }
+
 
 // {
 //   "extends": "../tsconfig.base.json",
