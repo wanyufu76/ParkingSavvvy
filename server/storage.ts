@@ -20,8 +20,8 @@ import {
   type InsertAdmin,
   type UserNotification,
   type InsertUserNotification,
-} from "../shared/schema";
-import { db } from "./db";
+} from "../shared/schema.js";
+import { db } from "./db.js";
 import { eq, and, desc } from "drizzle-orm";
 
 // Interface for storage operations
