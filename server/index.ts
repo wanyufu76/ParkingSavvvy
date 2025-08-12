@@ -52,11 +52,18 @@ app.use(express.static("dist"));
   }
 
   /********************* 7. 啟動 HTTP + WS 伺服器 *****************/
-  const PORT = 5000;
-  httpServer.listen(PORT, () =>
-    console.log(` HTTP + Socket.IO running on http://localhost:${PORT}`),
-  );
-})();
+  const PORT = process.env.PORT || 5000;
+  httpServer.listen(PORT, () => {
+  console.log(`🚀 HTTP + Socket.IO running on http://localhost:${PORT}`);
+  });
+})
+
+
+  // const PORT = 5000;
+  // httpServer.listen(PORT, () =>
+  //   console.log(` HTTP + Socket.IO running on http://localhost:${PORT}`),
+  // );
+// })();
 
 // const PORT = 5000;手機測試
 // httpServer.listen(PORT, '0.0.0.0', () => {
