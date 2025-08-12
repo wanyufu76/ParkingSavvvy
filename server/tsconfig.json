@@ -14,7 +14,7 @@
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
     "rootDir": "../",
-    "outDir": "../dist/server"
+    "outDir": "../dist"
   },
   "include": ["../server/**/*.ts", "../shared/**/*.ts"],
   "exclude": ["node_modules", "dist", "**/*.test.ts"]
