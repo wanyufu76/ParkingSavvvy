@@ -12,16 +12,15 @@
 {
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "rootDir": ".",
+    "rootDir": "../",                         // ⬅️ 讓 shared 被包含（因為 shared 在根目錄）
     "outDir": "../dist/server",
     "noEmit": false,
     "types": ["node"],
     "esModuleInterop": true,
-    "module": "esnext", // ✅ 改這行
-    "moduleResolution": "bundler", // ✅ 可選，避免其他 bundler 錯
-    "target": "ES2022" // ✅ 可選，但建議
+    "module": "commonjs",                     // ⬅️ 與 Express 相容
+    "moduleResolution": "node",
+    "target": "ES2020"
   },
-  "include": ["**/*", "../shared/**/*"],
-  "exclude": ["node_modules", "dist", "**/*.test.ts"]
+  "include": ["../server/**/*", "../shared/**/*"],  // ⬅️ 指向正確的 server 與 shared
+  "exclude": ["../node_modules", "../dist", "**/*.test.ts"]
 }
-
