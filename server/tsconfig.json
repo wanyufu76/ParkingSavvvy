@@ -13,11 +13,9 @@
 {
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "../dist/server",
     "rootDir": "../",
-    "noEmit": false
+    "outDir": "../dist/server"
   },
-  "include": ["./**/*", "../shared/**/*"],
+  "include": ["server/**/*.ts", "../shared/**/*.ts"],
   "exclude": ["node_modules", "dist", "**/*.test.ts"]
 }
-
