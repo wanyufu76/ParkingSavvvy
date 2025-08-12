@@ -13,7 +13,7 @@
 {
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "rootDir": "../server",
+    "rootDir": "../",
     "outDir": "../dist",
     "module": "Node16",                  // ✅ 改成 Node16
     "moduleResolution": "node16",
