@@ -1,27 +1,27 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage";
-import { setupAuth } from "./auth";
-import { setupAdminAuth, requireAdmin, createDefaultAdmin } from "./adminAuth2";
+import { storage } from "./storage.js";
+import { setupAuth } from "./auth.js";
+import { setupAdminAuth, requireAdmin, createDefaultAdmin } from "./adminAuth2.js";
 import {
   insertParkingSpotSchema,
   insertUserFavoriteSchema,
   insertImageUploadSchema,
   insertContactMessageSchema,
   insertUserNotificationSchema,
-} from "../shared/schema"
+} from "../shared/schema.js"
 import { z } from "zod";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
-import { registerRedPointsRoutes } from "./redPoints"; 
-import { processImage } from "./processImage";
+import { registerRedPointsRoutes } from "./redPoints.js"; 
+import { processImage } from "./processImage.js";
 import { createClient } from "@supabase/supabase-js";
 import "dotenv/config";
-import { db } from "./db";  // ✅ 匯入 db
-import { parkingSubSpots } from "../shared/schema"; // 匯入 schema
+import { db } from "./db.js";  // ✅ 匯入 db
+import { parkingSubSpots } from "../shared/schema.js"; // 匯入 schema
 import { eq } from "drizzle-orm";
-import { getParkingHints } from "./parkingHints"; 
+import { getParkingHints } from "./parkingHints.js"; 
 
 /* --------------------------------------------------
  *  Multer – local uploads (images / videos up to 500 MB)

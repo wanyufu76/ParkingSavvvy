@@ -4,12 +4,12 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
-  "dev": "tsx server/index.ts",
-  "build": "tsc -p server/tsconfig.json",
-  "start": "node dist/server/index.js",
-  "check": "tsc --noEmit",
-  "db:push": "drizzle-kit push"
-},
+    "dev": "tsx server/index.ts",
+    "build": "tsc -p server/tsconfig.json",
+    "start": "node dist/server/index.js",
+    "check": "tsc --noEmit",
+    "db:push": "drizzle-kit push"
+  },
   "dependencies": {
     "@babel/preset-typescript": "^7.27.1",
     "@hookform/resolvers": "^3.10.0",

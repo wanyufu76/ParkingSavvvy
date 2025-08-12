@@ -1,17 +1,15 @@
 {
   "extends": "../tsconfig.base.json",
+  "include": ["src/**/*", "../shared/**/*.ts"],
+  "exclude": ["node_modules", "dist", "**/*.test.ts"],
   "compilerOptions": {
     "outDir": "../dist/client",
     "rootDir": "../",
-    "noEmit": true,
     "lib": ["esnext", "dom", "dom.iterable"],
     "jsx": "react-jsx",
     "types": ["google.maps", "vite/client"]
-  },
-  "include": ["client/src/**/*", "shared/**/*"],
-  "exclude": ["node_modules", "dist", "build", "**/*.test.ts"]
+  }
 }
-
 
 // {
 //   "extends": "../tsconfig.base.json",

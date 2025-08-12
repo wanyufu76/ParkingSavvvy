@@ -5,9 +5,9 @@ import express, { Request, Response, NextFunction } from "express";
 import http from "http";
 import path from "path";
 import { Server as IOServer } from "socket.io";
-import { registerRoutes } from "./routes";
-import { initAutoRunner } from "./autoRunner";
-import { setupVite, serveStatic, log } from "./vite";
+import { registerRoutes } from "./routes.js";
+import { initAutoRunner } from "./autoRunner.js";
+import { setupVite, serveStatic, log } from "./vite.js";
 import "dotenv/config";
 
 /*******************************************************************

@@ -1,7 +1,7 @@
 import { Express } from "express";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
-import { storage } from "./storage";
+import { storage } from "./storage.js";
 
 const scryptAsync = promisify(scrypt);
 
