@@ -12,10 +12,14 @@
 {
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "rootDir": "../",                     // ✅ 要能包含 shared/
+    "rootDir": ".",
     "outDir": "../dist/server",
     "noEmit": false,
-    "types": ["node"]
+    "types": ["node"],
+    "esModuleInterop": true,
+    "module": "esnext", // ✅ 改這行
+    "moduleResolution": "bundler", // ✅ 可選，避免其他 bundler 錯
+    "target": "ES2022" // ✅ 可選，但建議
   },
   "include": ["**/*", "../shared/**/*"],
   "exclude": ["node_modules", "dist", "**/*.test.ts"]
