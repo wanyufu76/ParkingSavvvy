@@ -4,8 +4,8 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
-  "dev": "cross-env NODE_ENV=development tsx server/index.ts",
-  "build": "vite build && tsc -p server/tsconfig.json",
+  "dev": "tsx server/index.ts",
+  "build": "tsc -p server/tsconfig.json",
   "start": "node dist/server/index.js",
   "check": "tsc --noEmit",
   "db:push": "drizzle-kit push"

@@ -13,9 +13,9 @@
 {
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "rootDir": "../",
-    "outDir": "../dist/server"
+    "rootDir": "../server",          // ✅ rootDir 指向 source code 根目錄
+    "outDir": "../dist/server"       // ✅ 輸出位置
   },
-  "include": ["server/**/*.ts", "../shared/**/*.ts"],
-  "exclude": ["node_modules", "dist", "**/*.test.ts"]
+  "include": ["../server/**/*.ts", "../shared/**/*.ts"],  // ✅ 加上 ../ 修正路徑
+  "exclude": ["../node_modules", "../dist", "**/*.test.ts"]
 }
