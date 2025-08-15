@@ -2,9 +2,7 @@ import { useEffect, useRef } from "react";
 import { io } from "socket.io-client";
 import type { ParkingSpot } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { getAvailabilityMap, buildGroupAvailability } from "../../../server/availability";
-
-// ↑ 依你檔案實際位置調整相對路徑，例如 ../ 或 ../../
+import { getAvailabilityMap, buildGroupAvailability, pickGroupMarkerMetaWithHalfRule } from "../../../server/availability";
 const socket = io();
 
 interface Props {
@@ -347,23 +345,17 @@ export default function MapWithSpots({ onSpotClick }: Props) {
   // 2) 畫 P 點前，取出這個 P 對應的大區 key（A/B/C...）
   //   建議從第一個子格名稱推：A01 → A、B02 → B
   for (const mapping of boxMappings) {
-    const matchedSpot = spots.find((s) => s.name === mapping.spotName);
+    const matchedSpot = spots.find((s) => s.name === mapping.spotName); // 保留原本
+
+    // 從第一個子格名稱推大區 key：A01 → A、B02 → B
     const firstSub = mapping.rects?.[0]?.name ?? "";             // 例如 "A01"
     const groupKey = firstSub.match(/^[A-Za-z]+/)?.[0] ?? "";     // 取 "A"
-
     const group = availabilityByGroup.get(groupKey);              // 取聚合結果
-    const iconUrl = group
-      ? (group.state === "has_space"
-          ? "https://polqjhuklxclnvgpjckf.supabase.co/storage/v1/object/public/icons/parking.png"
-          : group.state === "no_space"
-          ? "https://polqjhuklxclnvgpjckf.supabase.co/storage/v1/object/public/icons/parking-2.png"
-          : "https://polqjhuklxclnvgpjckf.supabase.co/storage/v1/object/public/icons/parking-3.png")
-      : "https://polqjhuklxclnvgpjckf.supabase.co/storage/v1/object/public/icons/parking-3.png";
 
-    const title = group
-      ? `${groupKey} 區 | 空位: ${group.free_slots}/${group.capacity_est}`
-      : `${groupKey || mapping.spotName} | 狀態: 未知`;
+    // ★ 新增：用「一半門檻」規則挑 icon 與 title
+    const { title, iconUrl } = pickGroupMarkerMetaWithHalfRule(groupKey, group);
 
+    // ✅ 其他不動
     const marker = new g.maps.Marker({
       position: mapping.point,
       map,
@@ -450,35 +442,54 @@ export default function MapWithSpots({ onSpotClick }: Props) {
         }
 
         // ✅ 此時才畫紅點
-        try {
-          const redRes   = await fetch("/api/red-points");
-          const redPoints = await redRes.json();
-          console.log("🔴 紅點資料筆數:", redPoints.length);
+        // 進入 zoom-in 後，先清掉之前的紅點（防殘留）
+        redPointMarkers.forEach((m) => m.setMap(null));
+        redPointMarkers = [];
 
-          for (const pt of redPoints) {
+        // 取得這次被點的大區 key：例如 "H01" -> "H"
+        const firstSub = mapping.rects?.[0]?.name ?? "";
+        const groupKey = firstSub.match(/^[A-Za-z]+/)?.[0] ?? "";
+
+        // 如果 rects 真的沒有字母（保險備援：從 spotName 尾巴抓 A-Z）
+        const fallbackFromSpot = mapping.spotName?.match(/([A-Za-z]+)$/)?.[1] ?? "";
+        const finalGroupKey = groupKey || fallbackFromSpot;  // 優先 rects，其次 spotName
+
+        try {
+          const redRes    = await fetch("/api/red-points");
+          const redPoints = await redRes.json();
+
+          // 1) 如果你的每筆紅點有欄位 group_key（最簡單）
+          let filtered = Array.isArray(redPoints)
+            ? redPoints.filter((pt: any) => (pt.group_key ?? pt.groupKey) === finalGroupKey)
+            : [];
+
+          // 2) 若沒有 group_key，就用該區多邊形邊界粗略過濾（見下方 bounds 版進階作法）
+          // 這裡先保留，如果你有 group_key，這段可刪
+          if (!filtered.length && Array.isArray(mapping.rects) && mapping.rects.length) {
+            const bounds = new g.maps.LatLngBounds();
+            for (const box of mapping.rects) {
+              for (const c of box.coords) bounds.extend(new g.maps.LatLng(c.lat, c.lng));
+            }
+            filtered = redPoints.filter((pt: any) =>
+              bounds.contains(new g.maps.LatLng(pt.lat, pt.lng))
+            );
+          }
+
+          console.log(`🔴 ${finalGroupKey} 區紅點筆數:`, filtered.length);
+
+          for (const pt of filtered) {
             const redMarker = new g.maps.Marker({
-              // ⭐ 直接用經緯度欄位
-              position: {
-                lat: pt.lat,
-                lng: pt.lng,
-              },
+              position: { lat: pt.lat, lng: pt.lng },
               map,
               icon: {
                 path: g.maps.SymbolPath.CIRCLE,
-                scale: 7.5,               // 半徑 (px) ─ 依需求微調
+                scale: 7.5,
                 fillColor: "red",
                 fillOpacity: 1,
-
-                strokeColor: "white",   // 白色外框
+                strokeColor: "white",
                 strokeOpacity: 0.8,
-                strokeWeight: 2,        // 外框線寬 (px)；1~2 最適合
+                strokeWeight: 2,
               },
-              // label: {
-              //   text: pt.plate_text || pt.motor_index?.toString() || "?",
-              //   color: "black",
-              //   fontSize: "12px",
-              //   fontWeight: "bold",
-              // },
               label: {
                 text: pt.motor_index?.toString() ?? "",
                 color: "white",
