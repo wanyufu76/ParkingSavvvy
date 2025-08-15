@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Navigation as NavigationIcon, X } from "lucide-react";
 import type { ParkingSpot } from "@shared/schema";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+// 放檔案最上面
+const API = import.meta.env.VITE_API_BASE_URL; // 例如 https://parksavvy-api.onrender.com
 
 interface Props {
   spot: ParkingSpot | null;
@@ -18,42 +20,37 @@ const { data: subSpots = [] } = useQuery({
   queryKey: ["/api/parking-sub-spots", spot?.id],
   queryFn: async () => {
     if (!spot) return [];
-    const res = await fetch(`/api/parking-sub-spots?spotId=${spot.id}`);
+    const res = await fetch(`${API}/api/parking-sub-spots?spotId=${spot.id}`, {
+      credentials: "include",
+    });
     if (!res.ok) throw new Error("無法載入子停車格");
     return res.json();
   },
-  enabled: !!spot, // spot 存在時才查詢
+  enabled: !!spot,
 });
 
-
-  useEffect(() => {
-    fetch("/api/uploads")
-      .then((res) => res.json())
-      .then((data) => {
-        const uploaded = data.map((item: any) => item.location);
-        setUploadedSpots(uploaded);
-      })
-      .catch(() => {
-        setUploadedSpots([]);
-      });
-  }, []);
+// 上傳清單
+useEffect(() => {
+  fetch(`${API}/api/uploads`, { credentials: "include" })
+    .then((res) => res.json())
+    .then((data) => setUploadedSpots(data.map((item: any) => item.location)))
+    .catch(() => setUploadedSpots([]));
+}, [API]);
 
   const handlePointUsage = async (action: "navigation" | "streetview") => {
     try {
-      const res = await fetch("/api/points/use", {
+      const res = await fetch(`${API}/api/points/use`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action }),
       });
-
-      if (!res.ok) return false; // 積分不足或其他錯誤
+      if (!res.ok) return false;
       const data = await res.json();
       if (data.success === true) {
         queryClient.invalidateQueries({ queryKey: ["/api/points"] });
         return true;
       }
-
       return false;
     } catch {
       return false;
@@ -66,10 +63,11 @@ const { data: subSpots = [] } = useQuery({
   const lng = parseFloat(spot.longitude);
 
   const handleOpenImage = async (id: string, location: string) => {
-    const processedUrl = `/processed_images/${id}_output.jpg`;
-    const baseUrl = `/base_images/base_${id}.jpg`;
+    // 統一改成打 API 網域 + /uploads（不要用相對路徑）
+    const processedUrl = `${API}/uploads/processed_images/${id}_output.jpg`;
+    const baseUrl = `${API}/uploads/base_images/base_${id}.jpg`;
 
-    // 新增：先檢查 processed_images 是否有檔案
+    // 先用 HEAD 檢查 processed 是否存在
     try {
       const res = await fetch(processedUrl, { method: "HEAD" });
       if (res.ok) {
@@ -77,9 +75,9 @@ const { data: subSpots = [] } = useQuery({
         return;
       }
     } catch {
-      // 忽略錯誤，走原本的判斷
+      /* ignore */
     }
-    
+
     const useProcessed = uploadedSpots.includes(location);
     const imageUrl = useProcessed ? processedUrl : baseUrl;
     window.open(imageUrl, "_blank");
