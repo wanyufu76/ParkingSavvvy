@@ -1,0 +1,102 @@
+[
+  {
+    "motor_index": 0,
+    "plate_text": "CC-0507",
+    "pixel_x": 1599,
+    "pixel_y": 1123,
+    "lat": 25.01192430725303,
+    "lng": 121.54053672713127,
+    "location": "A01",
+    "image_filename": "A01_2025-08-04-15-27.jpg"
+  },
+  {
+    "motor_index": 1,
+    "plate_text": "729-KUI",
+    "pixel_x": 1119,
+    "pixel_y": 674,
+    "lat": 25.01193736,
+    "lng": 121.5405266,
+    "location": "A01",
+    "image_filename": "A01_2025-08-04-15-27.jpg"
+  },
+  {
+    "motor_index": 2,
+    "plate_text": "NDN-0985",
+    "pixel_x": 1586,
+    "pixel_y": 1110,
+    "lat": 25.011924669831387,
+    "lng": 121.54053644582048,
+    "location": "A01",
+    "image_filename": "A01_2025-08-04-15-27.jpg"
+  },
+  {
+    "motor_index": 3,
+    "plate_text": "IND-708",
+    "pixel_x": 2592,
+    "pixel_y": 2050,
+    "lat": 25.01189734,
+    "lng": 121.54055765,
+    "location": "A01",
+    "image_filename": "A01_2025-08-04-15-27.jpg"
+  },
+  {
+    "motor_index": 4,
+    "plate_text": "NPW-1600",
+    "pixel_x": 1541,
+    "pixel_y": 1068,
+    "lat": 25.01192589256515,
+    "lng": 121.54053549714773,
+    "location": "A01",
+    "image_filename": "A01_2025-08-04-15-27.jpg"
+  },
+  {
+    "motor_index": 5,
+    "plate_text": "536-PBP",
+    "pixel_x": 1475,
+    "pixel_y": 1007,
+    "lat": 25.011927674632354,
+    "lng": 121.54053411450938,
+    "location": "A01",
+    "image_filename": "A01_2025-08-04-15-27.jpg"
+  },
+  {
+    "motor_index": 6,
+    "plate_text": "NPR-0767",
+    "pixel_x": 2068,
+    "pixel_y": 1561,
+    "lat": 25.011911568989877,
+    "lng": 121.54054661026647,
+    "location": "A01",
+    "image_filename": "A01_2025-08-04-15-27.jpg"
+  },
+  {
+    "motor_index": 7,
+    "plate_text": "IND-708",
+    "pixel_x": 2604,
+    "pixel_y": 2061,
+    "lat": 25.011897007023762,
+    "lng": 121.54055790834363,
+    "location": "A01",
+    "image_filename": "A01_2025-08-04-15-27.jpg"
+  },
+  {
+    "motor_index": 8,
+    "plate_text": "IND-708",
+    "pixel_x": 2651,
+    "pixel_y": 2104,
+    "lat": 25.01189574584002,
+    "lng": 121.54055888684826,
+    "location": "A01",
+    "image_filename": "A01_2025-08-04-15-27.jpg"
+  },
+  {
+    "motor_index": 9,
+    "plate_text": "IND-708",
+    "pixel_x": 2759,
+    "pixel_y": 2205,
+    "lat": 25.0118928061273,
+    "lng": 121.54056116765986,
+    "location": "A01",
+    "image_filename": "A01_2025-08-04-15-27.jpg"
+  }
+]

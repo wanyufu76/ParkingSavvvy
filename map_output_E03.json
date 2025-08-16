@@ -1,0 +1,132 @@
+[
+  {
+    "motor_index": 0,
+    "plate_text": "9G802",
+    "pixel_x": 1112,
+    "pixel_y": 664,
+    "lat": 25.0123769,
+    "lng": 121.5400636,
+    "location": "E03",
+    "image_filename": "ib_2025-08-10-02-38.jpg"
+  },
+  {
+    "motor_index": 1,
+    "plate_text": "9G802",
+    "pixel_x": 1220,
+    "pixel_y": 763,
+    "lat": 25.01237375193727,
+    "lng": 121.54006627108353,
+    "location": "E03",
+    "image_filename": "ib_2025-08-10-02-38.jpg"
+  },
+  {
+    "motor_index": 2,
+    "plate_text": "9G802",
+    "pixel_x": 1367,
+    "pixel_y": 899,
+    "lat": 25.012369458144715,
+    "lng": 121.54006991430145,
+    "location": "E03",
+    "image_filename": "ib_2025-08-10-02-38.jpg"
+  },
+  {
+    "motor_index": 3,
+    "plate_text": "9G802",
+    "pixel_x": 1528,
+    "pixel_y": 1047,
+    "lat": 25.012364748183245,
+    "lng": 121.5400739106324,
+    "location": "E03",
+    "image_filename": "ib_2025-08-10-02-38.jpg"
+  },
+  {
+    "motor_index": 4,
+    "plate_text": "9G802",
+    "pixel_x": 1723,
+    "pixel_y": 1226,
+    "lat": 25.012359052357347,
+    "lng": 121.54007874345437,
+    "location": "E03",
+    "image_filename": "ib_2025-08-10-02-38.jpg"
+  },
+  {
+    "motor_index": 5,
+    "plate_text": "9G802",
+    "pixel_x": 1849,
+    "pixel_y": 1343,
+    "lat": 25.012355365049345,
+    "lng": 121.54008187207934,
+    "location": "E03",
+    "image_filename": "ib_2025-08-10-02-38.jpg"
+  },
+  {
+    "motor_index": 6,
+    "plate_text": "9G802",
+    "pixel_x": 1999,
+    "pixel_y": 1480,
+    "lat": 25.01235098707907,
+    "lng": 121.54008558672079,
+    "location": "E03",
+    "image_filename": "ib_2025-08-10-02-38.jpg"
+  },
+  {
+    "motor_index": 7,
+    "plate_text": "9G802",
+    "pixel_x": 2169,
+    "pixel_y": 1637,
+    "lat": 25.01234600251372,
+    "lng": 121.54008981604896,
+    "location": "E03",
+    "image_filename": "ib_2025-08-10-02-38.jpg"
+  },
+  {
+    "motor_index": 8,
+    "plate_text": "9G802",
+    "pixel_x": 2293,
+    "pixel_y": 1751,
+    "lat": 25.0123423871129,
+    "lng": 121.54009288366179,
+    "location": "E03",
+    "image_filename": "ib_2025-08-10-02-38.jpg"
+  },
+  {
+    "motor_index": 9,
+    "plate_text": "9G802",
+    "pixel_x": 2509,
+    "pixel_y": 1950,
+    "lat": 25.012336080435094,
+    "lng": 121.54009823478235,
+    "location": "E03",
+    "image_filename": "ib_2025-08-10-02-38.jpg"
+  },
+  {
+    "motor_index": 10,
+    "plate_text": "9G802",
+    "pixel_x": 2651,
+    "pixel_y": 2081,
+    "lat": 25.012331914782308,
+    "lng": 121.54010176927562,
+    "location": "E03",
+    "image_filename": "ib_2025-08-10-02-38.jpg"
+  },
+  {
+    "motor_index": 11,
+    "plate_text": "9G802",
+    "pixel_x": 2770,
+    "pixel_y": 2191,
+    "lat": 25.012328436066046,
+    "lng": 121.54010472091366,
+    "location": "E03",
+    "image_filename": "ib_2025-08-10-02-38.jpg"
+  },
+  {
+    "motor_index": 12,
+    "plate_text": "ZY 860",
+    "pixel_x": 2919,
+    "pixel_y": 2327,
+    "lat": 25.0123241,
+    "lng": 121.54010840000001,
+    "location": "E03",
+    "image_filename": "ib_2025-08-10-02-38.jpg"
+  }
+]

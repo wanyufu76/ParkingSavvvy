@@ -1,0 +1,102 @@
+[
+  {
+    "motor_index": 0,
+    "plate_text": "80H",
+    "pixel_x": 2849,
+    "pixel_y": 2325,
+    "lat": 25.01185025,
+    "lng": 121.54049215,
+    "location": "F03",
+    "image_filename": "F03_2025-08-05-12-26.JPG"
+  },
+  {
+    "motor_index": 1,
+    "plate_text": "AAD-1558",
+    "pixel_x": 2616,
+    "pixel_y": 2092,
+    "lat": 25.01185735273828,
+    "lng": 121.5404866382751,
+    "location": "F03",
+    "image_filename": "F03_2025-08-05-12-26.JPG"
+  },
+  {
+    "motor_index": 2,
+    "plate_text": "MQY-8358",
+    "pixel_x": 2376,
+    "pixel_y": 1852,
+    "lat": 25.01186463619041,
+    "lng": 121.54048098631624,
+    "location": "F03",
+    "image_filename": "F03_2025-08-05-12-26.JPG"
+  },
+  {
+    "motor_index": 3,
+    "plate_text": "LT-585",
+    "pixel_x": 2207,
+    "pixel_y": 1684,
+    "lat": 25.011869756660143,
+    "lng": 121.54047701283173,
+    "location": "F03",
+    "image_filename": "F03_2025-08-05-12-26.JPG"
+  },
+  {
+    "motor_index": 4,
+    "plate_text": "LT-585",
+    "pixel_x": 2070,
+    "pixel_y": 1547,
+    "lat": 25.01187393197943,
+    "lng": 121.54047377278395,
+    "location": "F03",
+    "image_filename": "F03_2025-08-05-12-26.JPG"
+  },
+  {
+    "motor_index": 5,
+    "plate_text": "3989-ZTh",
+    "pixel_x": 1899,
+    "pixel_y": 1376,
+    "lat": 25.011879114642433,
+    "lng": 121.54046975103748,
+    "location": "F03",
+    "image_filename": "F03_2025-08-05-12-26.JPG"
+  },
+  {
+    "motor_index": 6,
+    "plate_text": "EQC-3717",
+    "pixel_x": 1626,
+    "pixel_y": 1104,
+    "lat": 25.01188740494197,
+    "lng": 121.54046331776503,
+    "location": "F03",
+    "image_filename": "F03_2025-08-05-12-26.JPG"
+  },
+  {
+    "motor_index": 7,
+    "plate_text": "171-NBP",
+    "pixel_x": 1491,
+    "pixel_y": 969,
+    "lat": 25.011891496024706,
+    "lng": 121.54046014308483,
+    "location": "F03",
+    "image_filename": "F03_2025-08-05-12-26.JPG"
+  },
+  {
+    "motor_index": 8,
+    "plate_text": "NRB-0526",
+    "pixel_x": 1361,
+    "pixel_y": 839,
+    "lat": 25.01189544517178,
+    "lng": 121.5404570785467,
+    "location": "F03",
+    "image_filename": "F03_2025-08-05-12-26.JPG"
+  },
+  {
+    "motor_index": 9,
+    "plate_text": "35-PE",
+    "pixel_x": 1203,
+    "pixel_y": 682,
+    "lat": 25.01190025,
+    "lng": 121.54045334999999,
+    "location": "F03",
+    "image_filename": "F03_2025-08-05-12-26.JPG"
+  }
+]

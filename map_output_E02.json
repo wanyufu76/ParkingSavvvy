@@ -1,0 +1,102 @@
+[
+  {
+    "motor_index": 0,
+    "plate_text": "PCs-3513",
+    "pixel_x": 1119,
+    "pixel_y": 684,
+    "lat": 25.0124615,
+    "lng": 121.5399941,
+    "location": "E02",
+    "image_filename": "ib_2025-08-10-02-35.jpg"
+  },
+  {
+    "motor_index": 1,
+    "plate_text": "053-BPZ",
+    "pixel_x": 1341,
+    "pixel_y": 894,
+    "lat": 25.012454891142884,
+    "lng": 121.53999928541097,
+    "location": "E02",
+    "image_filename": "ib_2025-08-10-02-35.jpg"
+  },
+  {
+    "motor_index": 2,
+    "plate_text": "T03-EF",
+    "pixel_x": 1537,
+    "pixel_y": 1079,
+    "lat": 25.01244908143944,
+    "lng": 121.54000384379367,
+    "location": "E02",
+    "image_filename": "ib_2025-08-10-02-35.jpg"
+  },
+  {
+    "motor_index": 3,
+    "plate_text": "MAS-131",
+    "pixel_x": 1790,
+    "pixel_y": 1318,
+    "lat": 25.012441566728235,
+    "lng": 121.5400097399517,
+    "location": "E02",
+    "image_filename": "ib_2025-08-10-02-35.jpg"
+  },
+  {
+    "motor_index": 4,
+    "plate_text": "PAT-0262",
+    "pixel_x": 1964,
+    "pixel_y": 1483,
+    "lat": 25.01243638247442,
+    "lng": 121.54001380759699,
+    "location": "E02",
+    "image_filename": "ib_2025-08-10-02-35.jpg"
+  },
+  {
+    "motor_index": 5,
+    "plate_text": "NLE:9177",
+    "pixel_x": 2161,
+    "pixel_y": 1669,
+    "lat": 25.012430537032184,
+    "lng": 121.5400183940209,
+    "location": "E02",
+    "image_filename": "ib_2025-08-10-02-35.jpg"
+  },
+  {
+    "motor_index": 6,
+    "plate_text": "CM-9763",
+    "pixel_x": 2300,
+    "pixel_y": 1801,
+    "lat": 25.012426420127518,
+    "lng": 121.54002162420764,
+    "location": "E02",
+    "image_filename": "ib_2025-08-10-02-35.jpg"
+  },
+  {
+    "motor_index": 7,
+    "plate_text": "PCs-3513",
+    "pixel_x": 2452,
+    "pixel_y": 1944,
+    "lat": 25.012421906166562,
+    "lng": 121.54002516593086,
+    "location": "E02",
+    "image_filename": "ib_2025-08-10-02-35.jpg"
+  },
+  {
+    "motor_index": 8,
+    "plate_text": "PCs-3513",
+    "pixel_x": 2713,
+    "pixel_y": 2191,
+    "lat": 25.012414141458198,
+    "lng": 121.54003125824049,
+    "location": "E02",
+    "image_filename": "ib_2025-08-10-02-35.jpg"
+  },
+  {
+    "motor_index": 9,
+    "plate_text": "PCs-3513",
+    "pixel_x": 2869,
+    "pixel_y": 2339,
+    "lat": 25.0124095,
+    "lng": 121.54003490000001,
+    "location": "E02",
+    "image_filename": "ib_2025-08-10-02-35.jpg"
+  }
+]

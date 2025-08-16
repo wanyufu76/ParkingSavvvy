@@ -1,0 +1,142 @@
+[
+  {
+    "motor_index": 0,
+    "plate_text": "UR7888",
+    "pixel_x": 3020,
+    "pixel_y": 2430,
+    "lat": 25.01249935,
+    "lng": 121.5399624,
+    "location": "E01",
+    "image_filename": "ib_2025-08-11-03-20.jpg"
+  },
+  {
+    "motor_index": 1,
+    "plate_text": "AEH-317",
+    "pixel_x": 2894,
+    "pixel_y": 2315,
+    "lat": 25.012504040218815,
+    "lng": 121.53995858762963,
+    "location": "E01",
+    "image_filename": "ib_2025-08-11-03-20.jpg"
+  },
+  {
+    "motor_index": 2,
+    "plate_text": "T.30L",
+    "pixel_x": 2734,
+    "pixel_y": 2170,
+    "lat": 25.01250998632792,
+    "lng": 121.53995375442864,
+    "location": "E01",
+    "image_filename": "ib_2025-08-11-03-20.jpg"
+  },
+  {
+    "motor_index": 3,
+    "plate_text": "UR7888",
+    "pixel_x": 2618,
+    "pixel_y": 2064,
+    "lat": 25.01251433165827,
+    "lng": 121.53995022239542,
+    "location": "E01",
+    "image_filename": "ib_2025-08-11-03-20.jpg"
+  },
+  {
+    "motor_index": 4,
+    "plate_text": "UR7888",
+    "pixel_x": 2438,
+    "pixel_y": 1901,
+    "lat": 25.012521027855577,
+    "lng": 121.53994477949708,
+    "location": "E01",
+    "image_filename": "ib_2025-08-11-03-20.jpg"
+  },
+  {
+    "motor_index": 5,
+    "plate_text": "UR7888",
+    "pixel_x": 2251,
+    "pixel_y": 1731,
+    "lat": 25.012527996685485,
+    "lng": 121.53993911499362,
+    "location": "E01",
+    "image_filename": "ib_2025-08-11-03-20.jpg"
+  },
+  {
+    "motor_index": 6,
+    "plate_text": "UR7888",
+    "pixel_x": 2116,
+    "pixel_y": 1609,
+    "lat": 25.012533002477987,
+    "lng": 121.53993504611415,
+    "location": "E01",
+    "image_filename": "ib_2025-08-11-03-20.jpg"
+  },
+  {
+    "motor_index": 7,
+    "plate_text": "T.30L",
+    "pixel_x": 1964,
+    "pixel_y": 1471,
+    "lat": 25.012538670271976,
+    "lng": 121.53993043913722,
+    "location": "E01",
+    "image_filename": "ib_2025-08-11-03-20.jpg"
+  },
+  {
+    "motor_index": 8,
+    "plate_text": "T.30L",
+    "pixel_x": 1729,
+    "pixel_y": 1258,
+    "lat": 25.0125473968729,
+    "lng": 121.53992334585732,
+    "location": "E01",
+    "image_filename": "ib_2025-08-11-03-20.jpg"
+  },
+  {
+    "motor_index": 9,
+    "plate_text": "AEH-317",
+    "pixel_x": 1562,
+    "pixel_y": 1106,
+    "lat": 25.01255362948558,
+    "lng": 121.53991827977643,
+    "location": "E01",
+    "image_filename": "ib_2025-08-11-03-20.jpg"
+  },
+  {
+    "motor_index": 10,
+    "plate_text": "AEH-317",
+    "pixel_x": 1454,
+    "pixel_y": 1008,
+    "lat": 25.012557666324383,
+    "lng": 121.53991499849569,
+    "location": "E01",
+    "image_filename": "ib_2025-08-11-03-20.jpg"
+  },
+  {
+    "motor_index": 11,
+    "plate_text": "AEH-317",
+    "pixel_x": 1300,
+    "pixel_y": 868,
+    "lat": 25.012563393860937,
+    "lng": 121.53991034295795,
+    "location": "E01",
+    "image_filename": "ib_2025-08-11-03-20.jpg"
+  },
+  {
+    "motor_index": 12,
+    "plate_text": "AEH-317",
+    "pixel_x": 1134,
+    "pixel_y": 718,
+    "lat": 25.012569548450145,
+    "lng": 121.53990534029721,
+    "location": "E01",
+    "image_filename": "ib_2025-08-11-03-20.jpg"
+  },
+  {
+    "motor_index": 13,
+    "plate_text": "AEH-317",
+    "pixel_x": 1011,
+    "pixel_y": 606,
+    "lat": 25.012574150000003,
+    "lng": 121.53990160000001,
+    "location": "E01",
+    "image_filename": "ib_2025-08-11-03-20.jpg"
+  }
+]

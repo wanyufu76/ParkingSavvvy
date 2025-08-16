@@ -1,0 +1,112 @@
+[
+  {
+    "motor_index": 0,
+    "plate_text": "U-778",
+    "pixel_x": 1159,
+    "pixel_y": 710,
+    "lat": 25.011841099999998,
+    "lng": 121.54060245,
+    "location": "A02",
+    "image_filename": "ib_2025-08-11-10-25.jpg"
+  },
+  {
+    "motor_index": 1,
+    "plate_text": "U-778",
+    "pixel_x": 1332,
+    "pixel_y": 873,
+    "lat": 25.011836279112597,
+    "lng": 121.54060608609304,
+    "location": "A02",
+    "image_filename": "ib_2025-08-11-10-25.jpg"
+  },
+  {
+    "motor_index": 2,
+    "plate_text": "U-778",
+    "pixel_x": 1471,
+    "pixel_y": 1006,
+    "lat": 25.01183237562105,
+    "lng": 121.54060903025191,
+    "location": "A02",
+    "image_filename": "ib_2025-08-11-10-25.jpg"
+  },
+  {
+    "motor_index": 3,
+    "plate_text": "U-778",
+    "pixel_x": 1594,
+    "pixel_y": 1122,
+    "lat": 25.011828949502572,
+    "lng": 121.54061161435823,
+    "location": "A02",
+    "image_filename": "ib_2025-08-11-10-25.jpg"
+  },
+  {
+    "motor_index": 4,
+    "plate_text": "U-778",
+    "pixel_x": 1720,
+    "pixel_y": 1242,
+    "lat": 25.011825431893154,
+    "lng": 121.54061426747042,
+    "location": "A02",
+    "image_filename": "ib_2025-08-11-10-25.jpg"
+  },
+  {
+    "motor_index": 5,
+    "plate_text": "U-778",
+    "pixel_x": 1879,
+    "pixel_y": 1393,
+    "lat": 25.011820982376086,
+    "lng": 121.5406176234621,
+    "location": "A02",
+    "image_filename": "ib_2025-08-11-10-25.jpg"
+  },
+  {
+    "motor_index": 6,
+    "plate_text": "U-778",
+    "pixel_x": 2075,
+    "pixel_y": 1579,
+    "lat": 25.011815517714425,
+    "lng": 121.5406217451137,
+    "location": "A02",
+    "image_filename": "ib_2025-08-11-10-25.jpg"
+  },
+  {
+    "motor_index": 7,
+    "plate_text": "U-778",
+    "pixel_x": 2203,
+    "pixel_y": 1701,
+    "lat": 25.011811919045375,
+    "lng": 121.54062445936408,
+    "location": "A02",
+    "image_filename": "ib_2025-08-11-10-25.jpg"
+  },
+  {
+    "motor_index": 8,
+    "plate_text": "U-778",
+    "pixel_x": 2385,
+    "pixel_y": 1874,
+    "lat": 25.011806840118943,
+    "lng": 121.54062829007978,
+    "location": "A02",
+    "image_filename": "ib_2025-08-11-10-25.jpg"
+  },
+  {
+    "motor_index": 9,
+    "plate_text": "U-778",
+    "pixel_x": 2577,
+    "pixel_y": 2056,
+    "lat": 25.011801467274783,
+    "lng": 121.54063234247919,
+    "location": "A02",
+    "image_filename": "ib_2025-08-11-10-25.jpg"
+  },
+  {
+    "motor_index": 10,
+    "plate_text": "U-778",
+    "pixel_x": 2848,
+    "pixel_y": 2313,
+    "lat": 25.0117939,
+    "lng": 121.54063805,
+    "location": "A02",
+    "image_filename": "ib_2025-08-11-10-25.jpg"
+  }
+]

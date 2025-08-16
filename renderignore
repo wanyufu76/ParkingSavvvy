@@ -1,0 +1,33 @@
+# Node
+node_modules
+
+# Build outputs
+dist
+.cache
+
+# Large / model files
+*.pt
+*.onnx
+*.pkl
+*.h5
+*.ckpt
+*.db
+*.npy
+*.npz
+
+# Raw data / results
+uploads/
+downloads/
+mark/
+processed_images/
+base_config*/
+map_output*/
+sift_v1/
+components/
+
+# Editor / local files
+.vscode
+.idea
+.DS_Store
+*.log
+.env

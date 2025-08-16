@@ -1,0 +1,102 @@
+[
+  {
+    "motor_index": 0,
+    "plate_text": "PCS-3513",
+    "pixel_x": 1138,
+    "pixel_y": 705,
+    "lat": 25.011752,
+    "lng": 121.540675,
+    "location": "A03",
+    "image_filename": "ib_2025-08-15-11-55.jpg"
+  },
+  {
+    "motor_index": 1,
+    "plate_text": "PCS-3513",
+    "pixel_x": 1367,
+    "pixel_y": 922,
+    "lat": 25.01174554948637,
+    "lng": 121.54067983788522,
+    "location": "A03",
+    "image_filename": "ib_2025-08-15-11-55.jpg"
+  },
+  {
+    "motor_index": 2,
+    "plate_text": "IND-7086",
+    "pixel_x": 1563,
+    "pixel_y": 1107,
+    "lat": 25.011740050798846,
+    "lng": 121.54068396190087,
+    "location": "A03",
+    "image_filename": "ib_2025-08-15-11-55.jpg"
+  },
+  {
+    "motor_index": 3,
+    "plate_text": "IND-7086",
+    "pixel_x": 1727,
+    "pixel_y": 1262,
+    "lat": 25.011735430880552,
+    "lng": 121.54068742683958,
+    "location": "A03",
+    "image_filename": "ib_2025-08-15-11-55.jpg"
+  },
+  {
+    "motor_index": 4,
+    "plate_text": "PCS-3513",
+    "pixel_x": 1874,
+    "pixel_y": 1400,
+    "lat": 25.01173131071588,
+    "lng": 121.54069051696308,
+    "location": "A03",
+    "image_filename": "ib_2025-08-15-11-55.jpg"
+  },
+  {
+    "motor_index": 5,
+    "plate_text": "IPH-1600",
+    "pixel_x": 2095,
+    "pixel_y": 1609,
+    "lat": 25.011725089843125,
+    "lng": 121.54069518261765,
+    "location": "A03",
+    "image_filename": "ib_2025-08-15-11-55.jpg"
+  },
+  {
+    "motor_index": 6,
+    "plate_text": "729.KI",
+    "pixel_x": 2331,
+    "pixel_y": 1832,
+    "lat": 25.011718472354595,
+    "lng": 121.54070014573405,
+    "location": "A03",
+    "image_filename": "ib_2025-08-15-11-55.jpg"
+  },
+  {
+    "motor_index": 7,
+    "plate_text": "IND-7086",
+    "pixel_x": 2557,
+    "pixel_y": 2046,
+    "lat": 25.011712107121674,
+    "lng": 121.54070491965874,
+    "location": "A03",
+    "image_filename": "ib_2025-08-15-11-55.jpg"
+  },
+  {
+    "motor_index": 8,
+    "plate_text": "IPH-1600",
+    "pixel_x": 2708,
+    "pixel_y": 2188,
+    "lat": 25.011707868082684,
+    "lng": 121.54070809893798,
+    "location": "A03",
+    "image_filename": "ib_2025-08-15-11-55.jpg"
+  },
+  {
+    "motor_index": 9,
+    "plate_text": "IPH-1600",
+    "pixel_x": 2846,
+    "pixel_y": 2318,
+    "lat": 25.011704,
+    "lng": 121.540711,
+    "location": "A03",
+    "image_filename": "ib_2025-08-15-11-55.jpg"
+  }
+]

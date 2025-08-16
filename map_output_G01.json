@@ -1,0 +1,72 @@
+[
+  {
+    "motor_index": 0,
+    "plate_text": "MHID-2926",
+    "pixel_x": 2938,
+    "pixel_y": 2322,
+    "lat": 25.0115521,
+    "lng": 121.5407265,
+    "location": "G01",
+    "image_filename": "ib_2025-08-11-02-34.jpg"
+  },
+  {
+    "motor_index": 1,
+    "plate_text": "386-MQW",
+    "pixel_x": 2530,
+    "pixel_y": 1937,
+    "lat": 25.011563687089808,
+    "lng": 121.5407170023854,
+    "location": "G01",
+    "image_filename": "ib_2025-08-11-02-34.jpg"
+  },
+  {
+    "motor_index": 2,
+    "plate_text": "351-MZL",
+    "pixel_x": 2285,
+    "pixel_y": 1706,
+    "lat": 25.011570654216683,
+    "lng": 121.54071129162567,
+    "location": "G01",
+    "image_filename": "ib_2025-08-11-02-34.jpg"
+  },
+  {
+    "motor_index": 3,
+    "plate_text": "MEH-7511",
+    "pixel_x": 2025,
+    "pixel_y": 1460,
+    "lat": 25.011578045736716,
+    "lng": 121.5407052330027,
+    "location": "G01",
+    "image_filename": "ib_2025-08-11-02-34.jpg"
+  },
+  {
+    "motor_index": 4,
+    "plate_text": "MAJ-7398",
+    "pixel_x": 1791,
+    "pixel_y": 1238,
+    "lat": 25.011584725503013,
+    "lng": 121.54069975778441,
+    "location": "G01",
+    "image_filename": "ib_2025-08-11-02-34.jpg"
+  },
+  {
+    "motor_index": 5,
+    "plate_text": "NTE-7790",
+    "pixel_x": 1547,
+    "pixel_y": 1008,
+    "lat": 25.011591664412165,
+    "lng": 121.54069407015396,
+    "location": "G01",
+    "image_filename": "ib_2025-08-11-02-34.jpg"
+  },
+  {
+    "motor_index": 6,
+    "plate_text": "MRB-8600",
+    "pixel_x": 1222,
+    "pixel_y": 701,
+    "lat": 25.0116009,
+    "lng": 121.54068649999999,
+    "location": "G01",
+    "image_filename": "ib_2025-08-11-02-34.jpg"
+  }
+]

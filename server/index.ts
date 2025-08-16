@@ -23,11 +23,18 @@ initAutoRunner(io);
 /*******************************************************************
  * 3. 中介層 & 靜態檔
  *******************************************************************/
-const UPLOAD_ROOT = process.env.UPLOAD_ROOT || path.join(path.resolve(), "uploads");
+//0815
+// const UPLOAD_ROOT = process.env.UPLOAD_ROOT || path.join(path.resolve(), "uploads");
+// app.use(express.json());
+// app.use(express.urlencoded({ extended: false }));
+// app.use("/uploads", express.static(UPLOAD_ROOT));
+// app.use("/processed_images", express.static(path.join(path.resolve(), "processed_images")));
+// app.use("/base_images", express.static(path.join(path.resolve(), "base_images")));
+// app.use(express.static("dist"));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use("/uploads", express.static(UPLOAD_ROOT));
+app.use("/uploads", express.static(path.join(path.resolve(), "uploads")));
 app.use("/processed_images", express.static(path.join(path.resolve(), "processed_images")));
 app.use("/base_images", express.static(path.join(path.resolve(), "base_images")));
 app.use(express.static("dist"));
@@ -61,15 +68,16 @@ app.use(express.static("dist"));
 // })
 
 
-//   const PORT = 5000;
-//   httpServer.listen(PORT, () =>
-//     console.log(` HTTP + Socket.IO running on http://localhost:${PORT}`),
-//   );
-// })();
-  const PORT = process.env.PORT || 5000;
-  httpServer.listen(PORT, () => {
-    console.log(`🚀 HTTP + Socket.IO running on http://localhost:${PORT}`);
-  });
+  const PORT = 5000;
+  httpServer.listen(PORT, () =>
+    console.log(` HTTP + Socket.IO running on http://localhost:${PORT}`),
+  );
+})();
+//0815Ting
+  // const PORT = process.env.PORT || 5000;
+  // httpServer.listen(PORT, () => {
+  //   console.log(`🚀 HTTP + Socket.IO running on http://localhost:${PORT}`);
+  // });
 
     //   const PORT = 5000;
     //   httpServer.listen(PORT, '0.0.0.0', () => {

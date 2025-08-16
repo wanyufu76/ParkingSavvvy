@@ -1,0 +1,102 @@
+[
+  {
+    "motor_index": 0,
+    "plate_text": "ICY 728",
+    "pixel_x": 1139,
+    "pixel_y": 694,
+    "lat": 25.01231155,
+    "lng": 121.54023,
+    "location": "B01",
+    "image_filename": "ib_2025-08-15-10-12.jpg"
+  },
+  {
+    "motor_index": 1,
+    "plate_text": "ICY 728",
+    "pixel_x": 1374,
+    "pixel_y": 911,
+    "lat": 25.01230517460708,
+    "lng": 121.54023535747304,
+    "location": "B01",
+    "image_filename": "ib_2025-08-15-10-12.jpg"
+  },
+  {
+    "motor_index": 2,
+    "plate_text": "NFN-123",
+    "pixel_x": 1652,
+    "pixel_y": 1167,
+    "lat": 25.01229762761052,
+    "lng": 121.54024169948696,
+    "location": "B01",
+    "image_filename": "ib_2025-08-15-10-12.jpg"
+  },
+  {
+    "motor_index": 3,
+    "plate_text": "ICY 728",
+    "pixel_x": 1822,
+    "pixel_y": 1324,
+    "lat": 25.012293012735455,
+    "lng": 121.54024557753323,
+    "location": "B01",
+    "image_filename": "ib_2025-08-15-10-12.jpg"
+  },
+  {
+    "motor_index": 4,
+    "plate_text": "ZX 89",
+    "pixel_x": 1967,
+    "pixel_y": 1458,
+    "lat": 25.012289072617943,
+    "lng": 121.54024888855635,
+    "location": "B01",
+    "image_filename": "ib_2025-08-15-10-12.jpg"
+  },
+  {
+    "motor_index": 5,
+    "plate_text": "NFN-123",
+    "pixel_x": 2132,
+    "pixel_y": 1610,
+    "lat": 25.012284597423083,
+    "lng": 121.5402526492243,
+    "location": "B01",
+    "image_filename": "ib_2025-08-15-10-12.jpg"
+  },
+  {
+    "motor_index": 6,
+    "plate_text": "N-2989",
+    "pixel_x": 2314,
+    "pixel_y": 1779,
+    "lat": 25.01227964111905,
+    "lng": 121.54025681418567,
+    "location": "B01",
+    "image_filename": "ib_2025-08-15-10-12.jpg"
+  },
+  {
+    "motor_index": 7,
+    "plate_text": "MXZ-7120",
+    "pixel_x": 2537,
+    "pixel_y": 1984,
+    "lat": 25.01227358950479,
+    "lng": 121.54026189957581,
+    "location": "B01",
+    "image_filename": "ib_2025-08-15-10-12.jpg"
+  },
+  {
+    "motor_index": 8,
+    "plate_text": "ZX 89",
+    "pixel_x": 2727,
+    "pixel_y": 2160,
+    "lat": 25.012268423934287,
+    "lng": 121.54026624039136,
+    "location": "B01",
+    "image_filename": "ib_2025-08-15-10-12.jpg"
+  },
+  {
+    "motor_index": 9,
+    "plate_text": "NFN-123",
+    "pixel_x": 2892,
+    "pixel_y": 2312,
+    "lat": 25.01226395,
+    "lng": 121.54027,
+    "location": "B01",
+    "image_filename": "ib_2025-08-15-10-12.jpg"
+  }
+]

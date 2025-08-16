@@ -1,0 +1,22 @@
+[
+  {
+    "motor_index": 0,
+    "plate_text": "未知",
+    "pixel_x": 1286,
+    "pixel_y": 731,
+    "lat": 25.0114813,
+    "lng": 121.54088329999999,
+    "location": "H02",
+    "image_filename": "ib_2025-08-11-03-00.jpg"
+  },
+  {
+    "motor_index": 1,
+    "plate_text": "未知",
+    "pixel_x": 2745,
+    "pixel_y": 2204,
+    "lat": 25.0114477,
+    "lng": 121.5409097,
+    "location": "H02",
+    "image_filename": "ib_2025-08-11-03-00.jpg"
+  }
+]

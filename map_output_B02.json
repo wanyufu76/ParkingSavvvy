@@ -1,0 +1,132 @@
+[
+  {
+    "motor_index": 0,
+    "plate_text": "PP.201",
+    "pixel_x": 1157,
+    "pixel_y": 690,
+    "lat": 25.01223075,
+    "lng": 121.54029955,
+    "location": "B02",
+    "image_filename": "ib_2025-08-15-10-14.jpg"
+  },
+  {
+    "motor_index": 1,
+    "plate_text": "AE-2873",
+    "pixel_x": 1320,
+    "pixel_y": 847,
+    "lat": 25.012225935538645,
+    "lng": 121.54030344008477,
+    "location": "B02",
+    "image_filename": "ib_2025-08-15-10-14.jpg"
+  },
+  {
+    "motor_index": 2,
+    "plate_text": "AE-2873",
+    "pixel_x": 1458,
+    "pixel_y": 980,
+    "lat": 25.012221857156817,
+    "lng": 121.54030673541729,
+    "location": "B02",
+    "image_filename": "ib_2025-08-15-10-14.jpg"
+  },
+  {
+    "motor_index": 3,
+    "plate_text": "AE-2873",
+    "pixel_x": 1630,
+    "pixel_y": 1144,
+    "lat": 25.012216787160007,
+    "lng": 121.54031083197472,
+    "location": "B02",
+    "image_filename": "ib_2025-08-15-10-14.jpg"
+  },
+  {
+    "motor_index": 4,
+    "plate_text": "AE-2873",
+    "pixel_x": 1736,
+    "pixel_y": 1246,
+    "lat": 25.01221367112765,
+    "lng": 121.54031334972886,
+    "location": "B02",
+    "image_filename": "ib_2025-08-15-10-14.jpg"
+  },
+  {
+    "motor_index": 5,
+    "plate_text": "AE-2873",
+    "pixel_x": 1847,
+    "pixel_y": 1352,
+    "lat": 25.01221039507933,
+    "lng": 121.5403159967759,
+    "location": "B02",
+    "image_filename": "ib_2025-08-15-10-14.jpg"
+  },
+  {
+    "motor_index": 6,
+    "plate_text": "AE-2873",
+    "pixel_x": 2119,
+    "pixel_y": 1613,
+    "lat": 25.012202376938674,
+    "lng": 121.54032247543356,
+    "location": "B02",
+    "image_filename": "ib_2025-08-15-10-14.jpg"
+  },
+  {
+    "motor_index": 7,
+    "plate_text": "MP.9",
+    "pixel_x": 2242,
+    "pixel_y": 1731,
+    "lat": 25.01219876251854,
+    "lng": 121.54032539588502,
+    "location": "B02",
+    "image_filename": "ib_2025-08-15-10-14.jpg"
+  },
+  {
+    "motor_index": 8,
+    "plate_text": "318-BE",
+    "pixel_x": 2362,
+    "pixel_y": 1845,
+    "lat": 25.01219524063405,
+    "lng": 121.54032824156769,
+    "location": "B02",
+    "image_filename": "ib_2025-08-15-10-14.jpg"
+  },
+  {
+    "motor_index": 9,
+    "plate_text": "PP.201",
+    "pixel_x": 2509,
+    "pixel_y": 1986,
+    "lat": 25.01219091090921,
+    "lng": 121.54033173998536,
+    "location": "B02",
+    "image_filename": "ib_2025-08-15-10-14.jpg"
+  },
+  {
+    "motor_index": 10,
+    "plate_text": "PP.201",
+    "pixel_x": 2613,
+    "pixel_y": 2086,
+    "lat": 25.012187831931712,
+    "lng": 121.54033422779918,
+    "location": "B02",
+    "image_filename": "ib_2025-08-15-10-14.jpg"
+  },
+  {
+    "motor_index": 11,
+    "plate_text": "PP.201",
+    "pixel_x": 2716,
+    "pixel_y": 2185,
+    "lat": 25.012184800966423,
+    "lng": 121.54033667681914,
+    "location": "B02",
+    "image_filename": "ib_2025-08-15-10-14.jpg"
+  },
+  {
+    "motor_index": 12,
+    "plate_text": "PP.201",
+    "pixel_x": 2853,
+    "pixel_y": 2316,
+    "lat": 25.01218075,
+    "lng": 121.54033995,
+    "location": "B02",
+    "image_filename": "ib_2025-08-15-10-14.jpg"
+  }
+]
