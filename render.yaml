@@ -1,8 +1,9 @@
 #0815
 services:
   # 1) 前端：Vite 靜態網站（不用 Docker，最省事）
-  - type: static
+  - type: web
     name: parksavvy-frontend
+    env: static
     rootDir: client
     buildCommand: npm ci && npm run build
     staticPublishPath: dist
