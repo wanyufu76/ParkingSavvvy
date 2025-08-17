@@ -10,19 +10,45 @@
 //   }
 // }
 // server/tsconfig.json
+// {
+//   "extends": "../tsconfig.base.json",
+//   "compilerOptions": {
+//     "rootDir": "../",              // ✅ 改成整個專案根目錄
+//     "outDir": "../dist",           // ✅ 編譯到 dist 根目錄
+//     "module": "Node16",
+//     "moduleResolution": "node16",
+//     "target": "ES2022"
+//   },
+//   "include": [
+//     "../server/**/*.ts",           
+//     "../shared/**/*.ts",          
+//     "../vite.config.ts"          
+//   ],
+//   "exclude": ["node_modules", "dist", "**/*.test.ts"]
+// }
+
 {
-  "extends": "../tsconfig.base.json",
+  "extends": "../shared/tsconfig.base.json",
   "compilerOptions": {
-    "rootDir": "../",              // ✅ 改成整個專案根目錄
-    "outDir": "../dist",           // ✅ 編譯到 dist 根目錄
-    "module": "Node16",
-    "moduleResolution": "node16",
-    "target": "ES2022"
+    "rootDir": "../",                   // 整個 monorepo root（server + shared）
+    "outDir": "../dist",                // 編譯輸出到 dist 根目錄
+    "target": "ES2022",
+
+    /* Node ESM：你目前的 import 語法屬於 ESM，這樣最穩 */
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+
+    /* 常用品質/相容性選項 */
+    "strict": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true
   },
   "include": [
-    "../server/**/*.ts",           
-    "../shared/**/*.ts",          
-    "../vite.config.ts"          
+    "../server/**/*.ts",
+    "../shared/**/*.ts"
+    // ⚠️ 不要把 vite.config.ts 編到 server 的輸出裡（和 dev 工具無關）
   ],
   "exclude": ["node_modules", "dist", "**/*.test.ts"]
 }

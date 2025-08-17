@@ -1,13 +1,41 @@
+// {
+//   "extends": "../shared/tsconfig.base.json",
+//   "include": ["src/**/*", "../shared/**/*.ts"],
+//   "exclude": ["node_modules", "dist", "**/*.test.ts"],
+//   "compilerOptions": {
+//     "outDir": "../dist/client",
+//     "rootDir": "../",
+//     "lib": ["esnext", "dom", "dom.iterable"],
+//     "jsx": "react-jsx",
+//     "types": ["google.maps", "vite/client"]
+//   }
+// }
+
 {
-  "extends": "../tsconfig.base.json",
-  "include": ["src/**/*", "../shared/**/*.ts"],
+  "extends": "../shared/tsconfig.base.json",
+  "include": ["src", "../shared/**/*.ts"],
   "exclude": ["node_modules", "dist", "**/*.test.ts"],
   "compilerOptions": {
     "outDir": "../dist/client",
     "rootDir": "../",
-    "lib": ["esnext", "dom", "dom.iterable"],
+
+    /* React + Vite 必須用 ESM */
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "target": "ES2022",
+
+    /* JSX */
     "jsx": "react-jsx",
-    "types": ["google.maps", "vite/client"]
+
+    /* 常用便利設定 */
+    "strict": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+
+    /* 讓 TS 認得 import.meta.env */
+    "types": ["vite/client", "google.maps"]
   }
 }
 

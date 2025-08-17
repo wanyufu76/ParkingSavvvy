@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "start": "node dist/index.js",
+    "build": "tsc -p sever/tsconfig.json",
+    "start": "node dist/sever/index.js",
     "dev": "tsx src/index.ts",
     "check": "tsc --noEmit"
   },

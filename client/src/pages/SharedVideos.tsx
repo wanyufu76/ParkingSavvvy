@@ -35,20 +35,46 @@ export default function SharedVideos() {
   const { toast } = useToast();
   const { isAuthenticated, isLoading: authLoading } = useAuth();
 
-  /* ---------- 取得使用者自己的上傳紀錄 ---------- */
-  const {
-    data: userUploads = [],
-    isLoading: uploadsLoading,
-  } = useQuery<ImageUpload[]>({
-    queryKey: ["/api/uploads"],
-    enabled: isAuthenticated,
-  });
+  const API = import.meta.env.VITE_API_BASE_URL;
 
-  /* ---------- 取得所有共享影片（含圖片） ---------- */
-  const { data: allVideos = [], isLoading: videosLoading } = useQuery<any[]>({
-    queryKey: ["/api/shared-videos"],
-    enabled: isAuthenticated && userUploads.length > 0,
-  });
+  /* ---------- 取得使用者自己的上傳紀錄 ---------- */
+  // const {
+  //   data: userUploads = [],
+  //   isLoading: uploadsLoading,
+  // } = useQuery<ImageUpload[]>({
+  //   queryKey: ["/api/uploads"],
+  //   enabled: isAuthenticated,
+  // });
+
+  // /* ---------- 取得所有共享影片（含圖片） ---------- */
+  // const { data: allVideos = [], isLoading: videosLoading } = useQuery<any[]>({
+  //   queryKey: ["/api/shared-videos"],
+  //   enabled: isAuthenticated && userUploads.length > 0,
+  // });
+  /* 取得使用者自己的上傳紀錄 */
+    const {
+      data: userUploads = [],
+      isLoading: uploadsLoading,
+    } = useQuery<ImageUpload[]>({
+      queryKey: ["/api/uploads"],
+      enabled: isAuthenticated,
+      queryFn: async () => {
+        const r = await fetch(`${API}/api/uploads`, { credentials: "include" });
+        if (!r.ok) throw new Error("無法載入上傳紀錄");
+        return r.json();
+      },
+    });
+
+    /* 取得所有共享影片（含圖片） */
+    const { data: allVideos = [], isLoading: videosLoading } = useQuery<any[]>({
+      queryKey: ["/api/shared-videos"],
+      enabled: isAuthenticated && userUploads.length > 0,
+      queryFn: async () => {
+        const r = await fetch(`${API}/api/shared-videos`, { credentials: "include" });
+        if (!r.ok) throw new Error("無法載入共享影片");
+        return r.json();
+      },
+    });
 
   /* ---------- 權限檢查 ---------- */
   useEffect(() => {
@@ -224,7 +250,7 @@ export default function SharedVideos() {
                     {isImage ? (
                       <div className="relative bg-gray-100 rounded-lg overflow-hidden">
                         <img
-                          src={`/api/uploads/${encoded}`}
+                          src={`${API}/uploads/${encoded}`}
                           alt={file.originalName}
                           className="object-cover w-full h-48"
                         />
@@ -272,7 +298,7 @@ export default function SharedVideos() {
                     <div className="flex space-x-2">
                       <Button variant="outline" size="sm" className="flex-1" asChild>
                         <a
-                          href={`/api/uploads/${encoded}`}
+                          href={`${API}/uploads/${encoded}`}
                           target="_blank"
                           rel="noopener noreferrer"
                         >
@@ -283,7 +309,7 @@ export default function SharedVideos() {
 
                       <Button variant="outline" size="sm" asChild>
                         <a
-                          href={`/uploads/${encoded}`}
+                          href={`${API}/uploads/${encoded}`}
                           download={file.originalName || file.filename}
                         >
                           <Download className="h-3 w-3" />
