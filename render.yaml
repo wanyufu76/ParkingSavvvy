@@ -1,0 +1,76 @@
+#0815
+services:
+  # 1) 前端：Vite 靜態網站（不用 Docker，最省事）
+  - type: static
+    name: parksavvy-frontend
+    rootDir: client
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_BASE_URL
+        sync: false         # 之後在 Render 後台填：https://parksavvy-api.onrender.com
+      - key: VITE_GOOGLE_MAPS_API_KEY
+        sync: false
+
+  # 2) 後端：Node + 掛磁碟，提供 /uploads 靜態檔
+  - type: web
+    name: parksavvy-api
+    env: node
+    rootDir: server
+    buildCommand: |
+      if [ -f package-lock.json ]; then npm ci; else npm i; fi
+      npm run build        
+    startCommand: npm run start   
+    autoDeploy: true
+    branch: main
+    disk:
+      name: uploads-disk          # 建一顆持久硬碟（放很多照片）
+      mountPath: /data            # 掛在容器的 /data
+      sizeGB: 20                  # 你照片很多就加大（10~50GB 看需求）
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: 22.16.0
+      - key: UPLOAD_ROOT          # 你的程式會讀這個變數
+        value: /data/uploads
+      - key: CORS_ORIGIN
+        sync: false               # 填前端外網 URL（含 https）
+      - key: DATABASE_URL
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_KEY         # 如果是 service_role，僅後端/worker 使用
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: GITHUB_CLIENT_ID
+        sync: false
+      - key: GITHUB_CLIENT_SECRET
+        sync: false
+      - key: ADMIN_TOKEN          # 若要用我給你的 ZIP 批量上傳端點
+        sync: false
+      
+  - type: worker
+    name: parksavvy-cv-worker
+    env: docker
+    rootDir: .
+    dockerfilePath: Dockerfile.worker
+    autoDeploy: true
+    disk:
+      name: uploads-disk
+      mountPath: /data
+      sizeGB: 20
+    envVars:
+      - key: UPLOAD_ROOT
+        value: /data/uploads
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE   # worker 要用 service_role 寫資料
+        sync: false
+      - key: YOLO_MODEL_PATH
+        value: yolov8m.pt
+      - key: PROCESS_INTERVAL_SEC
+        value: "15"

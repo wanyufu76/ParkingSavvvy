@@ -68,16 +68,18 @@ app.use(express.static("dist"));
 // })
 
 
-  const PORT = 5000;
-  httpServer.listen(PORT, () =>
-    console.log(` HTTP + Socket.IO running on http://localhost:${PORT}`),
-  );
-})();
+//   const PORT = 5000;
+//   httpServer.listen(PORT, () =>
+//     console.log(` HTTP + Socket.IO running on http://localhost:${PORT}`),
+//   );
+// })();
+
 //0815Ting
-  // const PORT = process.env.PORT || 5000;
-  // httpServer.listen(PORT, () => {
-  //   console.log(`🚀 HTTP + Socket.IO running on http://localhost:${PORT}`);
-  // });
+  const PORT = process.env.PORT || 5000;
+  httpServer.listen(PORT, () => {
+    console.log(`🚀 HTTP + Socket.IO running on http://localhost:${PORT}`);
+  });
+})
 
     //   const PORT = 5000;
     //   httpServer.listen(PORT, '0.0.0.0', () => {
